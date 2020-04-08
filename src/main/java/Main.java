@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
         //leer variables del XML
-        File xml = new File(PATH + "toUpdater.xml");
+        File xml = new File(PATH + "/toUpdater.xml");
         readXML(xml);
 
         //Buscamos en la web las veriones
