@@ -14,19 +14,29 @@ import static main.java.Main.*;
 
 public class Updater {
     static void inciarApp() throws IOException {
-        String iniciar=PATH+"/";
-        String app=iniciar+"core.exe";
+        String iniciar = PATH + "/";
+        String app = iniciar + "core.exe";
         consolaPRINT(iniciar);
         consolaPRINT(app);
+        try {
+            Thread.sleep(18000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Runtime.getRuntime().exec(app, null, new File(iniciar));
-        System.exit(0);
+        consolaPRINT("INICIO");
     }
 
     static void installer(File file) throws IOException {
         consolaPRINT("INSTALADOR");
+        String path = file.getAbsolutePath();
+        consolaPRINT(path);
+        try {
+            Thread.sleep(18000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (Utils.isWindows()) {
-            String path = file.getAbsolutePath();
-            consolaPRINT(path);
             //consolaPRINT(path.substring(0, path.lastIndexOf("\\") + 1));
             Runtime.getRuntime().exec(path, null, new File(file.getParent()));
         } else if (Utils.isMac()) {
@@ -44,16 +54,16 @@ public class Updater {
         String path = toUpload.getPath();
         switch (path) {
             case ".":
-                path = PATH + nameFile;
+                path = PATH + "\\bin\\" + nameFile;
                 break;
             case "":
-                path = PATH + nameFile;
+                path = PATH + "\\bin\\" + nameFile;
                 break;
             case "tmp":
                 path = pathTemp;
                 break;
             default:
-                path = path + nameFile;
+                path = path + "\\bin\\" + nameFile;
                 break;
         }
 
@@ -67,10 +77,18 @@ public class Updater {
             if (!CheckSumMD5.isMD5Checksum(fileNew, toUpload.getMd5())) {
                 throw new Exception("MD5 --> original=" + toUpload.getMd5() + " file=" + CheckSumMD5.getMD5Checksum(fileNew));
             }
+            consolaPRINT("MD5 OK");
 //                consolaPRINT(CheckSumMD5.getMD5Checksum(fileNew));
 //                consolaPRINT(xmLtoUploader.getMd5());
             if (!toUpload.isInstaller()) {
+                consolaPRINT(path);
                 File old = new File(path);
+                Thread.sleep(6000);
+                consolaPRINT("");
+                consolaPRINT(fileNew.getAbsolutePath());
+                consolaPRINT(path);
+                consolaPRINT("");
+                        Thread.sleep(6000);
                 if (old.delete() || !old.exists()) {
                     consolaPRINT("original borrado o no existe");
                     if (fileNew.renameTo(new File(path))) {
@@ -81,6 +99,7 @@ public class Updater {
                         //TODO ERROR NO SE PUDO MOVER
                     }
                 } else {
+                    consolaPRINT("ERROR BORRAR ----------");
                     //TODO NO SE PUDO BORRAR
                 }
             } else {

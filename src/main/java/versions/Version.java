@@ -18,6 +18,9 @@ public class Version {
     private String path;
     private String fileName;
 
+    private static int ceroOld= Integer.parseInt(Main.versionOldSplit[0]);
+    private static int unoOld= Integer.parseInt(Main.versionOldSplit[1]);
+    private static int dosOld= Integer.parseInt(Main.versionOldSplit[2]);
     public Version(String url, String versionOld, String versionNew, boolean installer, String md5, String path, String fileName) {
         this.url = url;
         this.versionOld = versionOld;
@@ -57,11 +60,13 @@ public class Version {
             if (Integer.parseInt(versionNewSplit[3]) > 3) {//COMPROBAR QUE la version es release x.x.x.? > 3
                 System.out.println(versionNewSplit[0] + "." + versionNewSplit[1] + ">" + Main.versionOldSplit[0] + "." + Main.versionOldSplit[1]);
                 System.out.println(versionNew + ">" + Main.versionOld);
-                if (versionNewSplit[0].compareTo(Main.versionOldSplit[0]) >= 0 && versionNewSplit[1].compareTo(Main.versionOldSplit[1]) > 0) {// ?.x.x.x >= actual &&  x.?.x.x > actual
+                int ceroNew= Integer.parseInt(versionNewSplit[0]);
+                int unoNew= Integer.parseInt(versionNewSplit[1]);
+                if (ceroNew>=ceroOld && unoNew>unoOld) {// ?.x.x.x >= actual &&  x.?.x.x > actual
                     System.out.println("ENTRO 1 INSTALLER");
                     ListaDeRutas objeto = stringListaDeRutasEntry.getValue();
                     return new Version(rute2 + objeto.getHref(), Main.versionOld, versionNew,true,objeto.getMd5(), objeto.getPath(),objeto.getFile());
-                } else if (versionNewSplit[0].compareTo(Main.versionOldSplit[0]) <= 0 && versionNewSplit[1].compareTo(Main.versionOldSplit[1]) < 0) {
+                } else if (ceroNew<=ceroOld && unoNew<unoOld) {
                     break;
                 }
             }
@@ -87,11 +92,14 @@ public class Version {
             if (Integer.parseInt(versionNewSplit[3]) > 3) {//COMPROBAR QUE la version es release x.x.x.? > 3
                 System.out.println(versionNewSplit[0] + "." + versionNewSplit[1] + "." + versionNewSplit[2] + ">" + Main.versionOldSplit[0] + "." + Main.versionOldSplit[1] + "." + Main.versionOldSplit[2]);
                 System.out.println(versionNew + ">" + Main.versionOld);
-                if (versionNewSplit[0].compareTo(Main.versionOldSplit[0]) >= 0 && versionNewSplit[1].compareTo(Main.versionOldSplit[1]) >= 0 && versionNewSplit[2].compareTo(Main.versionOldSplit[2]) > 0) {// ?.x.x.x > actual &&  x.?.x.x >= actual &&  x.x.?.x > actual
+                int ceroNew= Integer.parseInt(versionNewSplit[0]);
+                int unoNew= Integer.parseInt(versionNewSplit[1]);
+                int dosNew= Integer.parseInt(versionNewSplit[2]);
+                if (ceroNew>=ceroOld && unoNew>=unoOld&& dosNew>dosOld) {// ?.x.x.x > actual &&  x.?.x.x >= actual &&  x.x.?.x > actual
                     System.out.println("ENTRO 1 JAR");
                     ListaDeRutas objeto = stringListaDeRutasEntry.getValue();
-                    return new Version(rute + objeto.getHref(), Main.versionOld, versionNew,true,objeto.getMd5(), objeto.getPath(),objeto.getFile());
-                } else if (versionNewSplit[0].compareTo(Main.versionOldSplit[0]) <= 0 && versionNewSplit[1].compareTo(Main.versionOldSplit[1]) <= 0 && versionNewSplit[2].compareTo(Main.versionOldSplit[2]) < 0) {
+                    return new Version(rute + objeto.getHref(), Main.versionOld, versionNew,false,objeto.getMd5(), objeto.getPath(),objeto.getFile());
+                } else if (ceroNew<=ceroOld&&unoNew<=unoOld&&dosNew<dosOld) {
                     break;
                 }
             }

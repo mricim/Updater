@@ -23,7 +23,7 @@ import java.io.IOException;
 
 
 public class Main extends Application {
-    public static final String STATUS = "PRODUCTION";//TODO   "DEV" or "PRODUCTION"
+    public static final String STATUS = "DEV";//TODO   "DEV" or "PRODUCTION"
 
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
     public static final String OS = Os.operativeSystem();
@@ -116,13 +116,15 @@ public class Main extends Application {
                                 updateProgress(80, 100);
                                 File file = Updater.dowloadFiles(toUpload);
                                 updateProgress(90, 100);
+                                new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
                                     Updater.installer(file);
                                     System.exit(0);
                                 } else {
                                     consolaPRINT("UPDATE NORMAL");
-                                    primaryStage.close();
+                                    Thread.sleep(6000);
                                     Updater.inciarApp();
+                                    System.exit(0);
                                 }
                             } catch (IOException e) {
                                 consolaPRINT(e.getMessage());
@@ -132,6 +134,7 @@ public class Main extends Application {
                         } else {
                             consolaPRINT("NO UPDATES");
                             Updater.inciarApp();
+                            System.exit(0);
                         }
                     } catch (Exception e) {
                         consolaPRINT(e.getMessage());
@@ -142,6 +145,7 @@ public class Main extends Application {
                     consolaPRINT("recien instalado");
                     try {
                         Updater.inciarApp();
+                        System.exit(0);
                     } catch (IOException ioException) {
                         consolaPRINT(ioException.getMessage());
                         ioException.printStackTrace();
