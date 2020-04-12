@@ -1,4 +1,4 @@
-package main.java;
+package main.java.test.Old;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,8 +13,8 @@ public class ListWeb {
         try {
             TreeMap<String, LinksDeLaWebParaDownloadFile> lista = new TreeMap<>();
 //https://jsoup.org/cookbook/extracting-data/example-list-links
-            String urlList = Main.url + Main.fileList;
-            System.out.println(Main.url);
+            String urlList = MainOld.url + MainOld.fileList;
+            System.out.println(MainOld.url);
             Document docs = Jsoup.connect(urlList).get();
             Elements links = docs.select("a[href]");
             for (Element link : links) {

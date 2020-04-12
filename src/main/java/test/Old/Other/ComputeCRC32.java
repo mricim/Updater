@@ -1,4 +1,4 @@
-package main.java.Other;
+package main.java.test.Old.Other;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
