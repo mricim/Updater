@@ -1,10 +1,10 @@
 package main.java.jsoup;
 
 public class ListaDeRutas {
-    private String href;
-    private String md5;
-    private String path;
-    private String file;
+    private final String href;
+    private final String md5;
+    private final String path;
+    private final String file;
 
     public ListaDeRutas(String href, String md5, String path, String file) {
         this.href=href;

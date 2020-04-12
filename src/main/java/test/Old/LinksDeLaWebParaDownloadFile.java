@@ -1,8 +1,8 @@
 package main.java.test.Old;
 
 public class LinksDeLaWebParaDownloadFile {
-    private String href;
-    private String md5;
+    private final String href;
+    private final String md5;
     public LinksDeLaWebParaDownloadFile(String href, String md5) {
         this.href=href;
         this.md5=md5;

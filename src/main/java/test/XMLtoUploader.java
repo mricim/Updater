@@ -1,13 +1,13 @@
 package main.java.test;
 
 public class XMLtoUploader {
-    private String url;
-    private String versionOld;
-    private String versionNew;
-    private boolean installer;
-    private String md5;
-    private String path;
-    private String fileName;
+    private final String url;
+    private final String versionOld;
+    private final String versionNew;
+    private final boolean installer;
+    private final String md5;
+    private final String path;
+    private final String fileName;
 
     public XMLtoUploader(String url, String versionOld, String versionNew, boolean installer, String md5, String path, String fileName) {
         this.url = url;

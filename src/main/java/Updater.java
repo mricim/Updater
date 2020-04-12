@@ -50,7 +50,7 @@ public class Updater {
 
     static File dowloadFiles(Version toUpload) throws Exception {
         String nameFile = toUpload.getFileName();
-        pathTemp = System.getProperty("java.io.tmpdir") + nameFile;
+        pathTemp = PATH + "/temp/" + nameFile;
         String path = toUpload.getPath();
         switch (path) {
             case ".":
@@ -88,7 +88,7 @@ public class Updater {
                 consolaPRINT(fileNew.getAbsolutePath());
                 consolaPRINT(path);
                 consolaPRINT("");
-                        Thread.sleep(6000);
+                Thread.sleep(6000);
                 if (old.delete() || !old.exists()) {
                     consolaPRINT("original borrado o no existe");
                     if (fileNew.renameTo(new File(path))) {

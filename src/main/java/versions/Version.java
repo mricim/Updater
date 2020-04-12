@@ -10,17 +10,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Version {
-    private String url;
-    private String versionOld;
-    private String versionNew;
-    private boolean installer;
-    private String md5;
-    private String path;
-    private String fileName;
+    private final String url;
+    private final String versionOld;
+    private final String versionNew;
+    private final boolean installer;
+    private final String md5;
+    private final String path;
+    private final String fileName;
 
-    private static int ceroOld= Integer.parseInt(Main.versionOldSplit[0]);
-    private static int unoOld= Integer.parseInt(Main.versionOldSplit[1]);
-    private static int dosOld= Integer.parseInt(Main.versionOldSplit[2]);
+    private static final int ceroOld= Integer.parseInt(Main.versionOldSplit[0]);
+    private static final int unoOld= Integer.parseInt(Main.versionOldSplit[1]);
+    private static final int dosOld= Integer.parseInt(Main.versionOldSplit[2]);
     public Version(String url, String versionOld, String versionNew, boolean installer, String md5, String path, String fileName) {
         this.url = url;
         this.versionOld = versionOld;
