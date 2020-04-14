@@ -27,7 +27,8 @@ public class Main extends Application {
 
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
     public static final String OS = Os.operativeSystem();
-    public static String propFileName = PATH.replace("/bin", "") + "/config.properties";
+    public static String propFileName = PATH + "\\conf/config.properties";
+    //public static String propFileName = PATH.replace("/bin", "") + "\\conf/config.properties";
     protected static String pathTemp;
 
     public static String name;
