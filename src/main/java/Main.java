@@ -9,8 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import main.java.jsoup.ListWeb;
 import main.java.os.Os;
@@ -20,6 +23,8 @@ import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
+
+import static main.java.CallOthers.generateFiles;
 
 
 public class Main extends Application {
@@ -39,9 +44,9 @@ public class Main extends Application {
 
     public static String hostDowloads;
     public static String[] versionOldSplit;
+    public static String[] versionNewSplit;
 
     public static void main(String[] args) {
-        consolaPRINT(propFileName);
         launch(args);
     }
 
@@ -56,8 +61,8 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();
 
-
         //
+
 
 
         //
@@ -69,20 +74,22 @@ public class Main extends Application {
         ProgressBar bar = new ProgressBar();
         vBoxChildren.add(bar);
         if (STATUS.equals("DEV")) {
+            textArea.setEditable(false);
             vBoxChildren.add(textArea);
         }
+        HBox hBox = new HBox();
+        TextFlow versionOldText = new TextFlow();
+        Label flecha = new Label();
+        TextFlow versionNewText = new TextFlow();
+        hBox.getChildren().addAll(versionOldText, flecha, versionNewText);
+        vBoxChildren.add(hBox);
+
+        consolaPRINT(propFileName);
+
         Task task = new Task<Void>() {
             @Override
             public Void call() {
                 //final int max = 1000000;
-                consolaPRINT("cuenta atras");
-                try {
-                    Thread.sleep(6000);
-                } catch (InterruptedException e) {
-                    consolaPRINT(e.getMessage());
-                    e.printStackTrace();
-                }
-                consolaPRINT("iniciamos codigo");
                 /*
                 final int max = 18000;
                 for (int i = 1; i <= max; i++) {
@@ -90,71 +97,77 @@ public class Main extends Application {
                     consolaPRINT(i);
                 }
                  */
-                updateProgress(2, 100);
+                updateProgress(1, 100);
                 try {
+                    //crear fichero de configs
+                    generateFiles();
                     //leer del fichero de configs
+                    updateProgress(2, 100);
+                    consolaPRINT("Read configs");
                     new GetPropertyValues().getPropValues();
-                    consolaPRINT("lectura de configs");
-                    updateProgress(5, 100);
+                    consolaPRINT("starter variables");
                     hostDowloads = host + project;
                     versionOldSplit = versionOld.split("\\.");
-                    //
-                    try {
-                        Document dowloadPrincipal = ListWeb.parseFile(hostDowloads, fileList);
-                        Version toUpload = Version.chekUpdateMajor(dowloadPrincipal);
-                        updateProgress(10, 100);
-                        //TODO XMLtoUploader toXML = null;
-                        if (toUpload == null) {
-                            consolaPRINT("SUBVERSION?");
-                            toUpload = Version.chekUpdateMinor(dowloadPrincipal);
-                            updateProgress(20, 100);
-                        }
-                        consolaPRINT("...");
-                        if (toUpload != null) {
-                            consolaPRINT(toUpload.toString());
-                            try {
-                                //GererateXMLtoUpdater.generar(file, toXML);
-                                updateProgress(80, 100);
-                                File file = Updater.dowloadFiles(toUpload);
-                                updateProgress(90, 100);
-                                new File(propFileName).delete();//ELIMINAR EL CONFIGS
-                                if (file != null) {// INSTALAR
-                                    Updater.installer(file);
-                                    System.exit(0);
-                                } else {
-                                    consolaPRINT("UPDATE NORMAL");
-                                    Thread.sleep(6000);
-                                    Updater.inciarApp();
-                                    System.exit(0);
-                                }
-                            } catch (IOException e) {
-                                consolaPRINT(e.getMessage());
-                                e.printStackTrace();
-                                //TODO ERROR DE DESCARGA
-                            }
-                        } else {
-                            consolaPRINT("NO UPDATES");
-                            Updater.inciarApp();
-                            System.exit(0);
-                        }
-                    } catch (Exception e) {
-                        consolaPRINT(e.getMessage());
-                        e.printStackTrace();
-                        //TODO ERROR NO se encuentra la web
-                    }
-                } catch (IOException e) {//RECIEN INSTALADO
-                    consolaPRINT("recien instalado");
-                    try {
-                        Updater.inciarApp();
-                        System.exit(0);
-                    } catch (IOException ioException) {
-                        consolaPRINT(ioException.getMessage());
-                        ioException.printStackTrace();
-                    }
+                    consolaPRINT("generator Labels");
+                    generatorLabel(versionOldText, versionOldSplit, false, false, false);
+                    consolaPRINT("generator Labels");
+                } catch (IOException e) {
+                    consolaPRINT("Generate Files error");
+                    e.printStackTrace();
                 }
+                updateProgress(3, 100);
 
+                consolaPRINT("Check Versions");
+                //
+                try {
+                    Document dowloadPrincipal = ListWeb.parseFile(hostDowloads, fileList);
+                    Version toUpload = Version.chekUpdateMajor(dowloadPrincipal);
+                    updateProgress(10, 100);
+                    //TODO XMLtoUploader toXML = null;
+                    if (toUpload == null) {
+                        consolaPRINT("SUB VERSION?");
+                        toUpload = Version.chekUpdateMinor(dowloadPrincipal);
+                        updateProgress(20, 100);
+                    }
+                    consolaPRINT("...");
+                    if (toUpload != null) {
+                        comparatorVersion(versionOldText,versionNewText,flecha,versionOldSplit,versionNewSplit);
+                        label.setText("Dowload new Upload");
+                        consolaPRINT(toUpload.toString());
+                        try {
+                            //GererateXMLtoUpdater.generar(file, toXML);
+                            updateProgress(80, 100);
+                            File file = Updater.dowloadFiles(toUpload);
+                            label.setText("Install...");
+                            updateProgress(100, 100);
+                            new File(propFileName).delete();//ELIMINAR EL CONFIGS
+                            if (file != null) {// INSTALAR
+                                CallOthers.installer(file);
+                                System.exit(0);
+                            } else {
+                                consolaPRINT("UPDATE NORMAL");
+                                CallOthers.inciarApp();
+                                System.exit(0);
+                            }
+                        } catch (IOException e) {
+                            consolaPRINT(e.getMessage());
+                            e.printStackTrace();
+                            //TODO ERROR DE DESCARGA
+                        }
+                    } else {
+                        updateProgress(100, 100);
+                        consolaPRINT("NO UPDATES");
+                        CallOthers.inciarApp();
+                        System.exit(0);
+                    }
+                } catch (Exception e) {
+                    consolaPRINT(e.getMessage());
+                    e.printStackTrace();
+                    //TODO ERROR NO se encuentra la web
+                }
                 return null;
             }
+
         };
         bar.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
@@ -168,5 +181,52 @@ public class Main extends Application {
                 System.out.println(s);//for echo if you want
             }
         });
+        //
+        try {
+            Thread.sleep(9000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void generatorLabel(TextFlow textFlow, String[] versionSplit, boolean zeroIf, boolean unoIf, boolean dosIf) {
+        textFlow.getChildren().clear();
+        String punto = ".";
+        Text puntoText = new Text(punto);
+        String bold = "-fx-font-weight: bold";
+
+        Text zeroText = new Text(versionSplit[0]);
+        Text unoText = new Text(versionSplit[1]);
+        Text dosText = new Text(versionSplit[2]);
+        if (zeroIf) {
+            zeroText.setStyle(bold);
+        }
+        if (unoIf) {
+            zeroText.setStyle(bold);
+        }
+        if (dosIf) {
+            zeroText.setStyle(bold);
+        }
+
+        textFlow.getChildren().addAll(zeroText, puntoText, unoText, puntoText, dosText);
+    }
+
+    private static void comparatorVersion(TextFlow textFlowOld, TextFlow textFlowNew, Label flecha, String[] versionOldSplit, String[] versionNewSplit) {
+        boolean zero = false;
+        boolean uno = false;
+        boolean dos = false;
+        if (Integer.parseInt(versionOldSplit[0]) != Integer.parseInt(versionNewSplit[0])) {
+            zero = true;
+        }
+        if (Integer.parseInt(versionOldSplit[1]) != Integer.parseInt(versionNewSplit[1])) {
+            uno = true;
+        }
+        if (Integer.parseInt(versionOldSplit[2]) != Integer.parseInt(versionNewSplit[2])) {
+            dos = true;
+        }
+
+        generatorLabel(textFlowOld, versionOldSplit, zero, uno, dos);
+        flecha.setText("-->");
+        generatorLabel(textFlowNew, versionNewSplit, zero, uno, dos);
     }
 }

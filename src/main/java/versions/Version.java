@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static main.java.Main.versionNewSplit;
+
 public class Version {
     private final String url;
     private final String versionOld;
@@ -25,6 +27,7 @@ public class Version {
         this.url = url;
         this.versionOld = versionOld;
         this.versionNew = versionNew;
+        versionNewSplit=versionNew.split("\\.");
         this.installer = installer;
         this.md5 = md5;
         this.path = path;

@@ -13,40 +13,6 @@ import java.nio.file.Paths;
 import static main.java.Main.*;
 
 public class Updater {
-    static void inciarApp() throws IOException {
-        String iniciar = PATH + "/";
-        String app = iniciar + "core.exe";
-        consolaPRINT(iniciar);
-        consolaPRINT(app);
-        try {
-            Thread.sleep(18000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Runtime.getRuntime().exec(app, null, new File(iniciar));
-        consolaPRINT("INICIO");
-    }
-
-    static void installer(File file) throws IOException {
-        consolaPRINT("INSTALADOR");
-        String path = file.getAbsolutePath();
-        consolaPRINT(path);
-        try {
-            Thread.sleep(18000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (Utils.isWindows()) {
-            //consolaPRINT(path.substring(0, path.lastIndexOf("\\") + 1));
-            Runtime.getRuntime().exec(path, null, new File(file.getParent()));
-        } else if (Utils.isMac()) {
-
-        } else if (Utils.isUnix()) {
-
-        } else {
-            //TODO ERROR SO ?
-        }
-    }
 
     static File dowloadFiles(Version toUpload) throws Exception {
         String nameFile = toUpload.getFileName();
@@ -83,12 +49,8 @@ public class Updater {
             if (!toUpload.isInstaller()) {
                 consolaPRINT(path);
                 File old = new File(path);
-                Thread.sleep(6000);
-                consolaPRINT("");
-                consolaPRINT(fileNew.getAbsolutePath());
-                consolaPRINT(path);
-                consolaPRINT("");
-                Thread.sleep(6000);
+                consolaPRINT("\n"+fileNew.getAbsolutePath());
+                consolaPRINT(path+"\n");
                 if (old.delete() || !old.exists()) {
                     consolaPRINT("original borrado o no existe");
                     if (fileNew.renameTo(new File(path))) {
