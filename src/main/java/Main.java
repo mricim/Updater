@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -13,8 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import main.java.jsoup.ListWeb;
 import main.java.os.Os;
 import main.java.propieties.GetPropertyValues;
@@ -32,7 +33,7 @@ public class Main extends Application {
 
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
     public static final String OS = Os.operativeSystem();
-    public static String propFileName = PATH + "\\conf/config.properties";
+    public static String propFileName = PATH + "/conf/config.properties";
     //public static String propFileName = PATH.replace("/bin", "") + "\\conf/config.properties";
     protected static String pathTemp;
 
@@ -51,44 +52,50 @@ public class Main extends Application {
     }
 
     private static final TextArea textArea = new TextArea();
+    private static final HBox versionOldBOX = new HBox();
+    private static final Label label = new Label("check new versions...");
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle(name);
+    public void start(Stage window) {
+        window.setTitle(name);
 
 
         StackPane root = new StackPane();
-        primaryStage.setScene(new Scene(root, 300, 250));
-        primaryStage.show();
-
+        window.setScene(new Scene(root, 300, 250));
+        window.show();
+        window.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
         //
-
 
 
         //
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(15);
+        vBox.prefWidthProperty().bind(window.widthProperty().multiply(0.80));
         root.getChildren().add(vBox);
         ObservableList<Node> vBoxChildren = vBox.getChildren();
-        Label label = new Label("check new versions...");
+        //label
         vBoxChildren.add(label);
         ProgressBar bar = new ProgressBar();
+        bar.prefWidthProperty().bind(vBox.widthProperty().multiply(0.80));
         vBoxChildren.add(bar);
         if (STATUS.equals("DEV")) {
             textArea.setEditable(false);
             vBoxChildren.add(textArea);
         }
         HBox hBox = new HBox();
-        TextFlow versionOldText = new TextFlow();
+        hBox.prefWidthProperty().bind(vBox.widthProperty().multiply(0.80));
+
         Label flecha = new Label();
-        TextFlow versionNewText = new TextFlow();
-        hBox.getChildren().addAll(versionOldText, flecha, versionNewText);
+        HBox versionNewText = new HBox();
+        hBox.getChildren().addAll(versionOldBOX, flecha, versionNewText);
         vBoxChildren.add(hBox);
 
-        consolaPRINT(propFileName);
+        System.out.println(propFileName);
 
-        Task task = new Task<Void>() {
+        Task<Void> task = new Task<Void>() {
             @Override
-            public Void call() {
+            public Void call() throws Exception {
                 //final int max = 1000000;
                 /*
                 final int max = 18000;
@@ -109,9 +116,9 @@ public class Main extends Application {
                     hostDowloads = host + project;
                     versionOldSplit = versionOld.split("\\.");
                     consolaPRINT("generator Labels");
-                    generatorLabel(versionOldText, versionOldSplit, false, false, false);
+                    generatorLabel(versionOldBOX, versionOldSplit, false, false, false);
                     consolaPRINT("generator Labels");
-                } catch (IOException e) {
+                } catch (Exception e) {
                     consolaPRINT("Generate Files error");
                     e.printStackTrace();
                 }
@@ -131,14 +138,14 @@ public class Main extends Application {
                     }
                     consolaPRINT("...");
                     if (toUpload != null) {
-                        comparatorVersion(versionOldText,versionNewText,flecha,versionOldSplit,versionNewSplit);
-                        label.setText("Dowload new Upload");
+                        comparatorVersion(versionOldBOX, versionNewText, flecha, versionOldSplit, versionNewSplit);
+                        labelSetText("Donwload new upload");
                         consolaPRINT(toUpload.toString());
                         try {
                             //GererateXMLtoUpdater.generar(file, toXML);
                             updateProgress(80, 100);
                             File file = Updater.dowloadFiles(toUpload);
-                            label.setText("Install...");
+                            labelSetText("Install...");
                             updateProgress(100, 100);
                             new File(propFileName).delete();//ELIMINAR EL CONFIGS
                             if (file != null) {// INSTALAR
@@ -149,7 +156,7 @@ public class Main extends Application {
                                 CallOthers.inciarApp();
                                 System.exit(0);
                             }
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             consolaPRINT(e.getMessage());
                             e.printStackTrace();
                             //TODO ERROR DE DESCARGA
@@ -157,6 +164,7 @@ public class Main extends Application {
                     } else {
                         updateProgress(100, 100);
                         consolaPRINT("NO UPDATES");
+                        labelSetText("Start!");
                         CallOthers.inciarApp();
                         System.exit(0);
                     }
@@ -171,6 +179,15 @@ public class Main extends Application {
         };
         bar.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
+    }
+
+    private void labelSetText(String string) {
+        Platform.runLater(new Runnable() {//in case you call from other thread
+            @Override
+            public void run() {
+                label.setText(string);
+            }
+        });
     }
 
     public static void consolaPRINT(String s) {
@@ -189,15 +206,15 @@ public class Main extends Application {
         }
     }
 
-    private static void generatorLabel(TextFlow textFlow, String[] versionSplit, boolean zeroIf, boolean unoIf, boolean dosIf) {
-        textFlow.getChildren().clear();
+    public void generatorLabel(HBox versionOldBOX, String[] versionSplit, boolean zeroIf, boolean unoIf, boolean dosIf) {
         String punto = ".";
-        Text puntoText = new Text(punto);
+        final Text puntoText = new Text(punto);
+        final Text puntoTextdos = new Text(punto);
         String bold = "-fx-font-weight: bold";
 
-        Text zeroText = new Text(versionSplit[0]);
-        Text unoText = new Text(versionSplit[1]);
-        Text dosText = new Text(versionSplit[2]);
+        final Text zeroText = new Text(versionSplit[0]);
+        final Text unoText = new Text(versionSplit[1]);
+        final Text dosText = new Text(versionSplit[2]);
         if (zeroIf) {
             zeroText.setStyle(bold);
         }
@@ -207,11 +224,16 @@ public class Main extends Application {
         if (dosIf) {
             zeroText.setStyle(bold);
         }
-
-        textFlow.getChildren().addAll(zeroText, puntoText, unoText, puntoText, dosText);
+        Platform.runLater(new Runnable() {//in case you call from other thread
+            @Override
+            public void run() {
+                versionOldBOX.getChildren().clear();
+                versionOldBOX.getChildren().addAll(zeroText, puntoText, unoText, puntoTextdos, dosText);
+            }
+        });
     }
 
-    private static void comparatorVersion(TextFlow textFlowOld, TextFlow textFlowNew, Label flecha, String[] versionOldSplit, String[] versionNewSplit) {
+    private void comparatorVersion(HBox textFlowOld, HBox textFlowNew, Label flecha, String[] versionOldSplit, String[] versionNewSplit) {
         boolean zero = false;
         boolean uno = false;
         boolean dos = false;
@@ -228,5 +250,28 @@ public class Main extends Application {
         generatorLabel(textFlowOld, versionOldSplit, zero, uno, dos);
         flecha.setText("-->");
         generatorLabel(textFlowNew, versionNewSplit, zero, uno, dos);
+    }
+
+    private void closeWindowEvent(WindowEvent event) {
+        System.out.println("Window close request ...");
+        System.exit(0);
+/*
+        if(storageModel.dataSetChanged()) {  // if the dataset has changed, alert the user with a popup
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.getButtonTypes().remove(ButtonType.OK);
+            alert.getButtonTypes().add(ButtonType.CANCEL);
+            alert.getButtonTypes().add(ButtonType.YES);
+            alert.setTitle("Quit application");
+            alert.setContentText(String.format("Close without saving?"));
+            alert.initOwner(primaryStage.getOwner());
+            Optional<ButtonType> res = alert.showAndWait();
+
+            if(res.isPresent()) {
+                if(res.get().equals(ButtonType.CANCEL))
+                    event.consume();
+            }
+        }
+
+ */
     }
 }
