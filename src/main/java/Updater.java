@@ -20,16 +20,16 @@ public class Updater {
         String path = toUpload.getPath();
         switch (path) {
             case ".":
-                path = PATH + "\\bin\\" + nameFile;
+                path = PATH + "/bin/" + nameFile;
                 break;
             case "":
-                path = PATH + "\\bin\\" + nameFile;
+                path = PATH + "/bin/" + nameFile;
                 break;
             case "tmp":
                 path = pathTemp;
                 break;
             default:
-                path = path + "\\bin\\" + nameFile;
+                path = path + "/bin/" + nameFile;
                 break;
         }
 
