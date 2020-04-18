@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 
 public class ListWeb {
     //https://jsoup.org/cookbook/extracting-data/example-list-links
+    /*
     public static Document parseFile(String url, String filename) throws IOException {
         String urlList = url + filename;
         System.out.println(urlList);
@@ -53,6 +54,7 @@ public class ListWeb {
             System.out.println("link[href]");
         }
          */
+    /*
             return lista;
         } catch (IOException e) {
             return null;
@@ -88,5 +90,8 @@ public class ListWeb {
             print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
         }
 */
+    /*
     }
+
+     */
 }

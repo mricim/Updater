@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static main.java.Main.versionNewSplit;
-import static main.java.test.Old.ListWeb.getListVersionsWeb;
 
 public class VersionOld {
     private final String url;
