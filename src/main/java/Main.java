@@ -15,11 +15,12 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import main.java.jsoup.ListWeb;
 import main.java.os.Os;
 import main.java.propieties.GetPropertyValues;
+import main.java.versions.Rutas;
 import main.java.versions.Version;
-import org.jsoup.nodes.Document;
+import main.java.xml.XML;
+import org.w3c.dom.Document;
 
 import java.io.File;
 
@@ -32,7 +33,6 @@ public class Main extends Application {
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
     public static final String OS = Os.operativeSystem();
     public static String propFileName = PATH + "/conf/config.properties";
-    //public static String propFileName = PATH.replace("/bin", "") + "\\conf/config.properties";
     protected static String pathTemp;
 
     public static String name;
@@ -48,6 +48,7 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
     private static String bold = "-fx-font-weight: bold";
     //Que hace?
     private static final Label isDoing = new Label("Read configs");
@@ -110,7 +111,7 @@ public class Main extends Application {
         region.setMinWidth(5);
         HBox.setHgrow(region2, Priority.ALWAYS);
         flecha.setStyle(bold);
-        hBoxVersions.getChildren().addAll(versionOldHbox,region, flecha,region2, versionNewHbox);
+        hBoxVersions.getChildren().addAll(versionOldHbox, region, flecha, region2, versionNewHbox);
         vBoxChildren.add(hBoxVersions);
 
         System.out.println(propFileName);
@@ -146,18 +147,20 @@ public class Main extends Application {
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
-                        Document dowloadPrincipal = ListWeb.parseFile(hostDowloads, fileList);
-                        Version toUpload = Version.chekUpdateMajor(dowloadPrincipal);
+                        Document document= XML.getListUpdates(hostDowloads, fileList);
+                        Rutas toUpload = Version.chekUpdateMajor(document);
+                        consolaPRINT("INSTALLER? "+toUpload);
                         updateProgress(10, 100);
                         //TODO XMLtoUploader toXML = null;
+
                         if (toUpload == null) {
-                            consolaPRINT("SUB VERSION?");
-                            toUpload = Version.chekUpdateMinor(dowloadPrincipal);
+                            toUpload = Version.chekUpdateMinor(document);
+                            consolaPRINT("SUB VERSION? "+toUpload);
                             updateProgress(20, 100);
                         }
                         consolaPRINT("...");
                         if (toUpload != null) {
-                            comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, versionNewSplit);
+                            comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, toUpload.getVersion().split("\\."));
 
                             labelSetText(isDoing, "Donwload new upgrade");
                             consolaPRINT(toUpload.toString());
@@ -174,9 +177,6 @@ public class Main extends Application {
                                     System.exit(0);
                                 } else {
                                     consolaPRINT("UPDATE NORMAL");
-                                    //Updater.files()
-                                    CallOthers.inciarApp();
-                                    System.exit(0);
                                 }
                             } catch (Exception e) {
                                 consolaPRINT(e.getMessage());
@@ -184,12 +184,13 @@ public class Main extends Application {
                                 //TODO ERROR DE DESCARGA
                             }
                         } else {
-                            updateProgress(100, 100);
                             consolaPRINT("NO UPDATES");
-                            labelSetText(isDoing, "Start!");
-                            CallOthers.inciarApp();
-                            System.exit(0);
                         }
+                        updateProgress(100, 100);
+                        //Updater.files()
+                        labelSetText(isDoing, "Start!");
+                        CallOthers.inciarApp();
+                        System.exit(0);
                     } catch (Exception e) {
                         consolaPRINT(e.getMessage());
                         e.printStackTrace();
@@ -206,6 +207,8 @@ public class Main extends Application {
         bar.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
     }
+
+
 
     private void labelSetText(Label label, String text) {
         Platform.runLater(new Runnable() {//in case you call from other thread
@@ -226,7 +229,7 @@ public class Main extends Application {
         });
         //
         try {
-            Thread.sleep(6500);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package main.java.jsoup;
+package main.java.test.jsoup;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,8 +15,8 @@ public class ListWeb {
         System.out.println(urlList);
         return Jsoup.connect(urlList).get();
     }
-    public static LinkedHashMap<String, ListaDeRutas> getListVersionsWeb(Document docs, String tags) {
-        LinkedHashMap<String, ListaDeRutas> lista = new LinkedHashMap<>();
+    public static LinkedHashMap<String, Rutas> getListVersionsWeb(Document docs, String tags) {
+        LinkedHashMap<String, Rutas> lista = new LinkedHashMap<>();
         Elements links;
         if (tags == null) {
             links = docs.select("a[href]");
@@ -24,14 +24,14 @@ public class ListWeb {
             links = docs.select(tags + " a[href]");
         }
         for (Element link : links) {
-            lista.put(link.text(), new ListaDeRutas(link.attr("href"), link.attr("md5"), link.attr("path"), link.attr("file")));
+            //lista.put(link.text(), new ListaDeRutas(link.attr("href"), link.attr("md5"), link.attr("path"), link.attr("file")));
         }
         return lista;
     }
 
-    public static LinkedHashMap<String, ListaDeRutas> getListVersionsWeb(String url, String fileList, String tags) {
+    public static LinkedHashMap<String, Rutas> getListVersionsWeb(String url, String fileList, String tags) {
         try {
-            LinkedHashMap<String, ListaDeRutas> lista = new LinkedHashMap<>();
+            LinkedHashMap<String, Rutas> lista = new LinkedHashMap<>();
 //https://jsoup.org/cookbook/extracting-data/example-list-links
             String urlList = url + fileList;
             System.out.println(url + " " + fileList);
@@ -43,7 +43,7 @@ public class ListWeb {
                 links = docs.select(tags + " a[href]");
             }
             for (Element link : links) {
-                lista.put(link.text(), new ListaDeRutas(link.attr("href"), link.attr("md5"), link.attr("path"), link.attr("file")));
+                //lista.put(link.text(), new ListaDeRutas(link.attr("href"), link.attr("md5"), link.attr("path"), link.attr("file")));
             }
         /*
         for (Element link : docs.select("[src]")) {

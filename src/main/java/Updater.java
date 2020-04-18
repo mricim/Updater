@@ -1,11 +1,9 @@
 package main.java;
 
-import com.sun.javafx.util.Utils;
 import main.java.test.CheckSumMD5;
-import main.java.versions.Version;
+import main.java.versions.Rutas;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,28 +12,14 @@ import static main.java.Main.*;
 
 public class Updater {
 
-    static File dowloadFiles(Version toUpload) throws Exception {
-        String nameFile = toUpload.getFileName();
+    static File dowloadFiles(Rutas toUpload) throws Exception {
+        String nameFile = toUpload.getName();
         pathTemp = PATH + "/temp/" + nameFile;
-        String path = toUpload.getPath();
-        switch (path) {
-            case ".":
-                path = PATH + "/bin/" + nameFile;
-                break;
-            case "":
-                path = PATH + "/bin/" + nameFile;
-                break;
-            case "tmp":
-                path = pathTemp;
-                break;
-            default:
-                path = path + "/bin/" + nameFile;
-                break;
-        }
+        String path = PATH +toUpload.getPath()+"/"+nameFile;
 
         //Descarga del fichero
         new File(pathTemp).delete();//por si existe otro fichero con el mismo nombre
-        Files.copy(new URL(toUpload.getUrl()).openStream(), Paths.get(pathTemp));
+        Files.copy(new URL(toUpload.getHref()).openStream(), Paths.get(pathTemp));
         consolaPRINT("Descarga completada");
         File fileNew = new File(pathTemp);
         try {
@@ -46,7 +30,7 @@ public class Updater {
             consolaPRINT("MD5 OK");
 //                consolaPRINT(CheckSumMD5.getMD5Checksum(fileNew));
 //                consolaPRINT(xmLtoUploader.getMd5());
-            if (!toUpload.isInstaller()) {
+            if (!toUpload.getType().equals("installer")) {
                 consolaPRINT(path);
                 File old = new File(path);
                 consolaPRINT("\n"+fileNew.getAbsolutePath());
