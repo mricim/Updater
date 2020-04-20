@@ -17,12 +17,13 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import main.java.os.OsCheck;
 import main.java.propieties.GetPropertyValues;
-import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import java.io.File;
 
 import static main.java.CallOthers.generateFiles;
+import static main.java.Updater.borrarFiles;
+import static main.java.Updater.descargarFiles;
 
 
 public class Main extends Application {
@@ -145,19 +146,18 @@ public class Main extends Application {
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
-                        NodeList nodeList= XML.getList(XML.getDocument(hostDowloads, fileList));
-                        Rutas toUpload = XML.chekUpdateMajor(nodeList,"installer");
-                        consolaPRINT("INSTALLER? "+toUpload);
+                        NodeList nodeList = XML.getList(XML.getDocument(hostDowloads, fileList));
+                        Rutas toUpload = Updater.chekUpdateMajor(nodeList, "installer");
+                        consolaPRINT("INSTALLER? " + toUpload);
                         updateProgress(10, 100);
 
                         //TODO XMLtoUploader toXML = null;
 
                         if (toUpload == null) {
-                            toUpload = XML.chekUpdateMinor(nodeList,"updater");
-                            consolaPRINT("SUB VERSION? "+toUpload);
+                            toUpload = Updater.chekUpdateMinor(nodeList, "updater");
+                            consolaPRINT("SUB VERSION? " + toUpload);
                             updateProgress(20, 100);
                         }
-                        System.exit(0);
                         consolaPRINT("...");
                         if (toUpload != null) {
                             comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, toUpload.getVersion().split("\\."));
@@ -166,10 +166,10 @@ public class Main extends Application {
                             consolaPRINT(toUpload.toString());
                             try {
                                 //GererateXMLtoUpdater.generar(file, toXML);
-                                updateProgress(80, 100);
+                                updateProgress(30, 100);
                                 File file = Updater.dowloadFiles(toUpload);
                                 labelSetText(isDoing, "Install...");
-                                updateProgress(100, 100);
+                                updateProgress(40, 100);
                                 new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
                                     consolaPRINT("UPDATE INSTALLER");
@@ -186,8 +186,24 @@ public class Main extends Application {
                         } else {
                             consolaPRINT("NO UPDATES");
                         }
+                        updateProgress(50, 100);
+                        //
+                        Updater.listOldFiles();
+                        Updater.chekUpdateFiles(nodeList, "files");
+                        System.out.println(borrarFiles.size());
+                        System.out.println(descargarFiles.size());
+                        System.out.println(borrarFiles.contains(descargarFiles));
+                        System.exit(0);
+                        for (Rutas rutas : borrarFiles) {
+                            System.out.println("REMOVE "+rutas);
+                            Updater.removeFiles(rutas);
+                        }
+                        for (Rutas rutas : descargarFiles) {
+                            System.out.println("ADD "+rutas);
+                            Updater.dowloadFiles(rutas);
+                        }
+                        //
                         updateProgress(100, 100);
-                        //Updater.files()
                         labelSetText(isDoing, "Start!");
                         CallOthers.inciarApp();
                         System.exit(0);
@@ -207,7 +223,6 @@ public class Main extends Application {
         bar.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
     }
-
 
 
     private void labelSetText(Label label, String text) {

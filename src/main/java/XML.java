@@ -10,7 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 
@@ -19,7 +19,7 @@ public class XML {
     private static int unoOld = Integer.parseInt(Main.versionOldSplit[1]);
     private static int dosOld = Integer.parseInt(Main.versionOldSplit[2]);
 
-    protected static Document getDocument(String hostDowloads, String fileList) throws ParserConfigurationException, IOException, SAXException {
+    public static Document getDocument(String hostDowloads, String fileList) throws ParserConfigurationException, IOException, SAXException {
         // DOM:
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -27,29 +27,18 @@ public class XML {
         documento.getDocumentElement().normalize();
         return documento;
     }
-    protected static NodeList getList(Document document) throws ParserConfigurationException, IOException, SAXException {
+    public static NodeList getList(Document document) throws ParserConfigurationException, IOException, SAXException {
         return document.getElementsByTagName("list");
     }
 
 
-    public static Rutas chekUpdateMajor(NodeList nList,String type) throws IOException, SAXException, ParserConfigurationException {
-        Rutas listaDowloadsApp =extractorXML(Main.hostDowloads, nList, null, type);
-        Rutas listaInstallers = getRuta(listaDowloadsApp.getHref(), listaDowloadsApp.getFile(), "list", "os");
-        return getRuta(listaInstallers.getHref(), listaInstallers.getFile(), "file", "InstallerExe");
-    }
-
-    public static Rutas chekUpdateMinor(NodeList nList,String type) throws IOException, SAXException, ParserConfigurationException {
-        Rutas listaDowloadsApp =extractorXML(Main.hostDowloads, nList, null, type);
-        return getRuta(listaDowloadsApp.getHref(), listaDowloadsApp.getFile(), "file", "updaterCore");
-    }
-
-    private static Rutas getRuta(String url, String nameFile, String fileORlist, String ifSearch) throws IOException, SAXException, ParserConfigurationException {
+    protected static Rutas getRuta(String url, String nameFile, String fileORlist, String ifSearch) throws IOException, SAXException, ParserConfigurationException {
         Document document2 = getDocument(url, nameFile);
         NodeList nList2 = document2.getElementsByTagName(fileORlist);
         return extractorXML(url, nList2, null, ifSearch);
     }
 
-    private static Rutas extractorXML(String ruta, NodeList nodeList, Node node, String tipoDeBusqueda) {
+    protected static Rutas extractorXML(String ruta, NodeList nodeList, Node node, String tipoDeBusqueda) {
         if (nodeList == null) {
             nodeList = node.getChildNodes();
         }
@@ -120,6 +109,10 @@ public class XML {
                         if (seeker.equals("updater")) {
                             return new Rutas(system, type, version, ruta + href, name, path, md5, file);
                         }
+                    case "files":
+                        if (seeker.equals("files")) {
+                            return new Rutas(system, type, version, ruta + href, name, path, md5, file);
+                        }
                         break;
                     case "os":
                         if (system.equals(Main.OS)) {
@@ -156,6 +149,8 @@ public class XML {
                             }
                         }
                         break;
+                    case "updaterFile":
+                        Updater.newFiles.add(new Rutas(system, "updaterCore", version, ruta + href, name, path, md5, file));
                 }
             }
         }

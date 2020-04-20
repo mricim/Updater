@@ -1,5 +1,7 @@
 package main.java;
 
+import java.util.Objects;
+
 public class Rutas {
     private String system;
     private String type;
@@ -65,5 +67,20 @@ public class Rutas {
                 ", md5='" + md5 + '\'' +
                 ", file='" + file + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Rutas)) return false;
+        Rutas rutas = (Rutas) o;
+        return getPath().equals(rutas.getPath()) &&
+                getMd5().equals(rutas.getMd5()) &&
+                getFile().equals(rutas.getFile());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPath(), getMd5(), getFile());
     }
 }
