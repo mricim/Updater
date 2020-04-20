@@ -1,51 +1,55 @@
-package main.java.versions;
+package main.java;
 
-import main.java.Main;
-import main.java.xml.XML;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
-public class Version {
-    private static final int ceroOld = Integer.parseInt(Main.versionOldSplit[0]);
-    private static final int unoOld = Integer.parseInt(Main.versionOldSplit[1]);
-    private static final int dosOld = Integer.parseInt(Main.versionOldSplit[2]);
+import org.w3c.dom.Document;
 
-    public static Rutas chekUpdateMajor(Document document) throws IOException, SAXException, ParserConfigurationException {
-        Rutas listaDowloadsApp = null;
-        NodeList nList = document.getElementsByTagName("forVersions");//xml
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node node = nList.item(temp);//list
-            listaDowloadsApp = sacarCosas(Main.hostDowloads, null, node, "installer");//switch
-        }
+public class XML {
+    private static int ceroOld = Integer.parseInt(Main.versionOldSplit[0]);
+    private static int unoOld = Integer.parseInt(Main.versionOldSplit[1]);
+    private static int dosOld = Integer.parseInt(Main.versionOldSplit[2]);
 
-        Document document2 = XML.getListUpdates(listaDowloadsApp.getHref(), listaDowloadsApp.getFile());
-        NodeList nList2 = document2.getElementsByTagName("list");
-        Rutas listaInstallers = sacarCosas(listaDowloadsApp.getHref(), nList2, null, "os");
-
-        Document document3 = XML.getListUpdates(listaInstallers.getHref(), listaInstallers.getFile());
-        NodeList nList3 = document3.getElementsByTagName("file");
-        Rutas temp=sacarCosas(listaInstallers.getHref(), nList3, null, "InstallerExe");
-        return temp;
+    protected static Document getDocument(String hostDowloads, String fileList) throws ParserConfigurationException, IOException, SAXException {
+        // DOM:
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document documento = db.parse(new URL(hostDowloads + fileList).openStream());
+        documento.getDocumentElement().normalize();
+        return documento;
     }
-    public static Rutas chekUpdateMinor(Document document) throws IOException, SAXException, ParserConfigurationException {
-        Rutas listaDowloadsApp = null;
-        NodeList nList = document.getElementsByTagName("forVersions");
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node node = nList.item(temp);//list
-            listaDowloadsApp = sacarCosas(Main.hostDowloads, null, node, "updater");
-        }
-        Document document3 = XML.getListUpdates(listaDowloadsApp.getHref(), listaDowloadsApp.getFile());//INSTALLERS list
-        NodeList nList3 = document3.getElementsByTagName("file");
-        return sacarCosas(listaDowloadsApp.getHref(), nList3, null, "updaterCore");
+    protected static NodeList getList(Document document) throws ParserConfigurationException, IOException, SAXException {
+        return document.getElementsByTagName("list");
     }
 
-    private static Rutas sacarCosas(String ruta, NodeList nodeList, Node node, String busqueda) {
+
+    public static Rutas chekUpdateMajor(NodeList nList,String type) throws IOException, SAXException, ParserConfigurationException {
+        Rutas listaDowloadsApp =extractorXML(Main.hostDowloads, nList, null, type);
+        Rutas listaInstallers = getRuta(listaDowloadsApp.getHref(), listaDowloadsApp.getFile(), "list", "os");
+        return getRuta(listaInstallers.getHref(), listaInstallers.getFile(), "file", "InstallerExe");
+    }
+
+    public static Rutas chekUpdateMinor(NodeList nList,String type) throws IOException, SAXException, ParserConfigurationException {
+        Rutas listaDowloadsApp =extractorXML(Main.hostDowloads, nList, null, type);
+        return getRuta(listaDowloadsApp.getHref(), listaDowloadsApp.getFile(), "file", "updaterCore");
+    }
+
+    private static Rutas getRuta(String url, String nameFile, String fileORlist, String ifSearch) throws IOException, SAXException, ParserConfigurationException {
+        Document document2 = getDocument(url, nameFile);
+        NodeList nList2 = document2.getElementsByTagName(fileORlist);
+        return extractorXML(url, nList2, null, ifSearch);
+    }
+
+    private static Rutas extractorXML(String ruta, NodeList nodeList, Node node, String tipoDeBusqueda) {
         if (nodeList == null) {
             nodeList = node.getChildNodes();
         }
@@ -53,6 +57,7 @@ public class Version {
             Node node2 = nodeList.item(temp2);
             if (node2.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) node2;
+                String seeker = null;
                 String system = null;
                 String type = null;
                 String version = null;
@@ -61,6 +66,10 @@ public class Version {
                 String path = null;
                 String md5 = null;
                 String file = null;
+                try {
+                    seeker = eElement.getElementsByTagName("seeker").item(0).getTextContent();
+                } catch (NullPointerException e) {
+                }
                 try {
                     system = eElement.getElementsByTagName("system").item(0).getTextContent();
                 } catch (NullPointerException e) {
@@ -101,14 +110,14 @@ public class Version {
 //                System.out.println(path);
 //                System.out.println(md5 + "\n");
                 String[] versionNewSplit;
-                switch (busqueda) {
+                switch (tipoDeBusqueda) {
                     case "installer":
-                        if (type.equals("installer")) {
+                        if (seeker.equals("installer")) {
                             return new Rutas(system, type, version, ruta + href, name, path, md5, file);
                         }
                         break;
                     case "updater":
-                        if (type.equals("updater")) {
+                        if (seeker.equals("updater")) {
                             return new Rutas(system, type, version, ruta + href, name, path, md5, file);
                         }
                         break;
@@ -137,12 +146,12 @@ public class Version {
                         if (Integer.parseInt(versionNewSplit[3]) > 3) {//COMPROBAR QUE la version es release x.x.x.? > 3
                             System.out.println(versionNewSplit[0] + "." + versionNewSplit[1] + "." + versionNewSplit[2] + ">" + Main.versionOldSplit[0] + "." + Main.versionOldSplit[1] + "." + Main.versionOldSplit[2]);
                             System.out.println(version + ">" + Main.versionOld);
-                            int ceroNew= Integer.parseInt(versionNewSplit[0]);
-                            int unoNew= Integer.parseInt(versionNewSplit[1]);
-                            int dosNew= Integer.parseInt(versionNewSplit[2]);
-                            if (ceroNew>=ceroOld && unoNew>=unoOld&& dosNew>dosOld) {// ?.x.x.x > actual &&  x.?.x.x >= actual &&  x.x.?.x > actual
+                            int ceroNew = Integer.parseInt(versionNewSplit[0]);
+                            int unoNew = Integer.parseInt(versionNewSplit[1]);
+                            int dosNew = Integer.parseInt(versionNewSplit[2]);
+                            if (ceroNew == ceroOld && unoNew == unoOld && dosNew > dosOld) {// ?.x.x.x == actual &&  x.?.x.x == actual &&  x.x.?.x > actual
                                 return new Rutas(system, "updaterCore", version, ruta + href, name, path, md5, file);
-                            } else if (ceroNew<=ceroOld&&unoNew<=unoOld&&dosNew<dosOld) {
+                            } else if (ceroNew <= ceroOld && unoNew <= unoOld && dosNew < dosOld) {
                                 return null;
                             }
                         }

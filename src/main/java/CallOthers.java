@@ -1,14 +1,13 @@
 package main.java;
 
 import com.sun.javafx.util.Utils;
-import main.java.os.Os;
 
 import java.io.File;
 import java.io.IOException;
 
 import static main.java.Main.PATH;
 import static main.java.Main.consolaPRINT;
-import static main.java.os.Os.operativeSystem;
+import static main.java.os.OsCheck.operativeSystem;
 
 public class CallOthers {
 

@@ -15,12 +15,10 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import main.java.os.Os;
+import main.java.os.OsCheck;
 import main.java.propieties.GetPropertyValues;
-import main.java.versions.Rutas;
-import main.java.versions.Version;
-import main.java.xml.XML;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import java.io.File;
 
@@ -31,7 +29,7 @@ public class Main extends Application {
     public static final boolean DEVfalsePROUDCTIONtrue = false;//"DEV"=false or "PRODUCTION"=true
 
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
-    public static final String OS = Os.operativeSystem();
+    public static final String OS = OsCheck.operativeSystem();
     public static String propFileName = PATH + "/conf/config.properties";
     protected static String pathTemp;
 
@@ -147,17 +145,19 @@ public class Main extends Application {
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
-                        Document document= XML.getListUpdates(hostDowloads, fileList);
-                        Rutas toUpload = Version.chekUpdateMajor(document);
+                        NodeList nodeList= XML.getList(XML.getDocument(hostDowloads, fileList));
+                        Rutas toUpload = XML.chekUpdateMajor(nodeList,"installer");
                         consolaPRINT("INSTALLER? "+toUpload);
                         updateProgress(10, 100);
+
                         //TODO XMLtoUploader toXML = null;
 
                         if (toUpload == null) {
-                            toUpload = Version.chekUpdateMinor(document);
+                            toUpload = XML.chekUpdateMinor(nodeList,"updater");
                             consolaPRINT("SUB VERSION? "+toUpload);
                             updateProgress(20, 100);
                         }
+                        System.exit(0);
                         consolaPRINT("...");
                         if (toUpload != null) {
                             comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, toUpload.getVersion().split("\\."));

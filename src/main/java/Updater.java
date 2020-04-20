@@ -1,7 +1,6 @@
 package main.java;
 
 import main.java.test.CheckSumMD5;
-import main.java.versions.Rutas;
 
 import java.io.File;
 import java.net.URL;
