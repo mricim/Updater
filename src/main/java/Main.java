@@ -180,8 +180,7 @@ public class Main extends Application {
                                 }
                             } catch (Exception e) {
                                 consolaPRINT(e.getMessage());
-                                e.printStackTrace();
-                                //TODO ERROR DE DESCARGA
+                                e.printStackTrace();//ERROR DE DESCARGA
                             }
                         } else {
                             consolaPRINT("NO UPDATES");
@@ -193,13 +192,12 @@ public class Main extends Application {
                         System.out.println(borrarFiles.size());
                         System.out.println(descargarFiles.size());
                         System.out.println(borrarFiles.contains(descargarFiles));
-                        System.exit(0);
                         for (Rutas rutas : borrarFiles) {
                             System.out.println("REMOVE "+rutas);
                             Updater.removeFiles(rutas);
                         }
                         for (Rutas rutas : descargarFiles) {
-                            System.out.println("ADD "+rutas);
+                            labelSetText(isDoing,"ADD "+rutas);
                             Updater.dowloadFiles(rutas);
                         }
                         //
@@ -209,12 +207,11 @@ public class Main extends Application {
                         System.exit(0);
                     } catch (Exception e) {
                         consolaPRINT(e.getMessage());
-                        e.printStackTrace();
-                        //TODO ERROR NO se encuentra la web
+                        e.printStackTrace();//ERROR NO se encuentra la web
                     }
                 } catch (Exception e) {
                     consolaPRINT("Generate Files error");
-                    e.printStackTrace();
+                    consolaPRINT(e.getMessage());
                 }
                 return null;
             }
