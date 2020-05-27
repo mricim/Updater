@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static main.java.Main.*;
 
@@ -19,14 +22,17 @@ public class Updater {
 
     protected static ArrayList<Rutas> newFiles = new ArrayList<>();
     protected static ArrayList<Rutas> oldFiles = new ArrayList<>();
-    protected static ArrayList<Rutas> borrarFiles = new ArrayList<>();
-    protected static ArrayList<Rutas> descargarFiles = new ArrayList<>();
+    protected static Set<Rutas> borrarFiles = new HashSet<>();
+    protected static Set<Rutas> descargarFiles = new HashSet<>();
 
     static File dowloadFiles(Rutas toUpload) throws Exception {
         String nameFile = toUpload.getName();
         pathTemp = PATH + "/temp/" + nameFile;
         String prePath = PATH + toUpload.getPath();
-        String path = PATH + toUpload.getPath() + "/" + nameFile;
+        String path = PATH + File.separator + toUpload.getPath() + File.separator + nameFile;
+        if (OS.equals("windows")) {
+            path = path.replaceAll("/", "\\");
+        }
 
         //Descarga del fichero
         new File(pathTemp).delete();//por si existe otro fichero con el mismo nombre
@@ -49,16 +55,19 @@ public class Updater {
                 consolaPRINT(path + "\n");
                 if (old.delete() || !old.exists()) {
                     consolaPRINT("original borrado o no existe");
-                    if (fileNew.renameTo(new File(path))) {
-                        consolaPRINT("Update hecho");
+
+                    consolaPRINT(fileNew.getAbsolutePath() + " " + old.getAbsolutePath());
+                    consolaPRINT(fileNew.getAbsolutePath());
+
+                    //Files.move(Paths.get(fileNew.getAbsolutePath()), Paths.get(old.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+                    if (fileNew.renameTo(old)) {
+                        consolaPRINT("move file: hecho");
                         return null;
                     } else {
-                        consolaPRINT("Update fallo");
-                        //TODO ERROR NO SE PUDO MOVER
+                        consolaPRINT("move file: error");
                     }
                 } else {
                     consolaPRINT("ERROR BORRAR ----------");
-                    //TODO NO SE PUDO BORRAR
                 }
             } else {
                 return fileNew;
@@ -70,7 +79,7 @@ public class Updater {
     }
 
     public static void removeFiles(Rutas rutas) {
-        String path = PATH + rutas.getPath() + "/" + rutas.getName();
+        String path = PATH + rutas.getPath() + File.separator + rutas.getName();
         File remove = new File(path);
         if (remove.delete()) {
             System.out.println("delete");
@@ -93,18 +102,19 @@ public class Updater {
         System.out.println(listaDowloadsApp.getHref());
         XML.getRuta(listaDowloadsApp.getHref(), listaDowloadsApp.getFile(), "file", "updaterFile");
         borrarFiles.addAll(oldFiles);
-        borrarFiles.removeAll(newFiles);
         descargarFiles.addAll(newFiles);
+
         descargarFiles.removeAll(oldFiles);
+        borrarFiles.removeAll(newFiles);
     }
 
     public static void listOldFiles() throws Exception {
         List<File> files = new ArrayList<>();
         listf(PATH + "res", files);
         for (File file : files) {
-            String name=file.getName();
-            System.out.println(file.getName()+" "+ file.getPath().replace(PATH,"").replace("\\"+name,"")+" "+ CheckSumMD5.getMD5Checksum(file));
-            oldFiles.add(new Rutas(null, null, null, null, name, file.getPath().replace(PATH,"").replace("\\"+name,""), CheckSumMD5.getMD5Checksum(file), null));
+            String name = file.getName();
+            System.out.println(file.getName() + " " + file.getPath().replace(PATH, "").replace("\\" + name, "") + " " + CheckSumMD5.getMD5Checksum(file));
+            oldFiles.add(new Rutas(null, null, null, null, name, file.getPath().replace(PATH, "").replace("\\" + name, ""), CheckSumMD5.getMD5Checksum(file), null));
         }
     }
 

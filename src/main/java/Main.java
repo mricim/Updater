@@ -189,15 +189,15 @@ public class Main extends Application {
                         //
                         Updater.listOldFiles();
                         Updater.chekUpdateFiles(nodeList, "files");
-                        System.out.println(borrarFiles.size());
                         System.out.println(descargarFiles.size());
+                        System.out.println(borrarFiles.size());
                         System.out.println(borrarFiles.contains(descargarFiles));
                         for (Rutas rutas : borrarFiles) {
-                            System.out.println("REMOVE "+rutas);
-                            Updater.removeFiles(rutas);
+                            System.out.println("REMOVE " + rutas);
+                                Updater.removeFiles(rutas);
                         }
                         for (Rutas rutas : descargarFiles) {
-                            labelSetText(isDoing,"ADD "+rutas);
+                            labelSetText(isDoing, "ADD " + rutas.getPath() + File.separator + rutas.getName());
                             Updater.dowloadFiles(rutas);
                         }
                         //

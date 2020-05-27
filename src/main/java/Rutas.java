@@ -1,5 +1,7 @@
 package main.java;
 
+import java.io.File;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class Rutas {
@@ -46,6 +48,9 @@ public class Rutas {
     public String getPath() {
         return path;
     }
+    public String getPathNope() {
+        return path.replaceAll("\\\\","/");
+    }
 
     public String getMd5() {
         return md5;
@@ -63,7 +68,7 @@ public class Rutas {
                 ", version='" + version + '\'' +
                 ", href='" + href + '\'' +
                 ", name='" + name + '\'' +
-                ", path='" + path + '\'' +
+                ", path='" + getPathNope() + '\'' +
                 ", md5='" + md5 + '\'' +
                 ", file='" + file + '\'' +
                 '}';
@@ -74,13 +79,13 @@ public class Rutas {
         if (this == o) return true;
         if (!(o instanceof Rutas)) return false;
         Rutas rutas = (Rutas) o;
-        return getPath().equals(rutas.getPath()) &&
-                getMd5().equals(rutas.getMd5()) &&
-                getFile().equals(rutas.getFile());
+        return getName().equals(rutas.getName()) &&
+                getPathNope().equals(rutas.getPathNope()) &&
+                getMd5().equals(rutas.getMd5());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPath(), getMd5(), getFile());
+        return Objects.hash(getName(), getPathNope(), getMd5());
     }
 }
