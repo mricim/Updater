@@ -2,6 +2,8 @@ package main.java;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -32,7 +34,7 @@ public class Main extends Application {
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
     public static final String OS = OsCheck.operativeSystem();
     public static String propFileName = PATH + "/conf/config.properties";
-    protected static String pathTemp;
+    protected static File pathTemp;
 
     public static String name;
     public static String versionOld;
@@ -51,6 +53,7 @@ public class Main extends Application {
     private static String bold = "-fx-font-weight: bold";
     //Que hace?
     private static final Label isDoing = new Label("Read configs");
+    private static final Label numbers = new Label("");
     //desarrolladores
     private static final TextArea textArea = new TextArea();
     //print versiones
@@ -64,6 +67,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) {
+
         int tamano;
         if (DEVfalsePROUDCTIONtrue) {
             tamano = 100;
@@ -74,11 +78,17 @@ public class Main extends Application {
 
 
         StackPane root = new StackPane();
-        window.setScene(new Scene(root, 400, tamano));
+        window.setScene(new Scene(root, 500, tamano));
         window.show();
         window.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
         //
-
+        textArea.textProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+                textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+                //use Double.MIN_VALUE to scroll to the top
+            }
+        });
 
         //
         VBox vBox = new VBox();
@@ -93,6 +103,8 @@ public class Main extends Application {
         tagsHbox.getChildren().addAll(isDoing);
         tagsHbox.prefWidthProperty().bind(vBox.widthProperty().multiply(0.80));
         vBoxChildren.add(tagsHbox);
+        numbers.setVisible(false);
+        vBoxChildren.add(numbers);
         ProgressBar bar = new ProgressBar();
         bar.prefWidthProperty().bind(vBox.widthProperty().multiply(0.80));
         vBoxChildren.add(bar);
@@ -132,38 +144,39 @@ public class Main extends Application {
                     generateFiles();
                     //leer del fichero de configs
                     updateProgress(2, 100);
-                    consolaPRINT("Read configs");
+                    consolaPRINT("Read configs",3000);
                     new GetPropertyValues().getPropValues();
-                    consolaPRINT("starter variables");
+                    consolaPRINT("starter variables",3000);
                     hostDowloads = host + project;
                     versionOldSplit = versionOld.split("\\.");
-                    consolaPRINT("generator Labels");
+                    consolaPRINT("generator Labels",3000);
                     generatorLabel(versionOldHbox, versionOldSplit, false, false, false);
 
                     updateProgress(3, 100);
 
-                    consolaPRINT("Check Versions");
+                    consolaPRINT("Check Versions",3000);
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
+                        System.out.println("FFFFFF "+fileList);
                         NodeList nodeList = XML.getList(XML.getDocument(hostDowloads, fileList));
                         Rutas toUpload = Updater.chekUpdateMajor(nodeList, "installer");
-                        consolaPRINT("INSTALLER? " + toUpload);
+                        consolaPRINT("INSTALLER? " + toUpload,3000);
                         updateProgress(10, 100);
 
                         //TODO XMLtoUploader toXML = null;
 
                         if (toUpload == null) {
                             toUpload = Updater.chekUpdateMinor(nodeList, "updater");
-                            consolaPRINT("SUB VERSION? " + toUpload);
+                            consolaPRINT("SUB VERSION? " + toUpload,3000);
                             updateProgress(20, 100);
                         }
-                        consolaPRINT("...");
+                        consolaPRINT("...",3000);
                         if (toUpload != null) {
                             comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, toUpload.getVersion().split("\\."));
 
                             labelSetText(isDoing, "Donwload new upgrade");
-                            consolaPRINT(toUpload.toString());
+                            consolaPRINT(toUpload.toString(),3000);
                             try {
                                 //GererateXMLtoUpdater.generar(file, toXML);
                                 updateProgress(30, 100);
@@ -172,18 +185,18 @@ public class Main extends Application {
                                 updateProgress(40, 100);
                                 new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
-                                    consolaPRINT("UPDATE INSTALLER");
+                                    consolaPRINT("UPDATE INSTALLER",3000);
                                     CallOthers.installer(file);
                                     System.exit(0);
                                 } else {
-                                    consolaPRINT("UPDATE NORMAL");
+                                    consolaPRINT("UPDATE NORMAL",3000);
                                 }
                             } catch (Exception e) {
-                                consolaPRINT(e.getMessage());
+                                consolaPRINT(e.getMessage(),3000);
                                 e.printStackTrace();//ERROR DE DESCARGA
                             }
                         } else {
-                            consolaPRINT("NO UPDATES");
+                            consolaPRINT("NO UPDATES",3000);
                         }
                         updateProgress(50, 100);
                         //
@@ -196,22 +209,27 @@ public class Main extends Application {
                             System.out.println("REMOVE " + rutas);
                                 Updater.removeFiles(rutas);
                         }
+                        int totalAdescargar=descargarFiles.size();
+                        int queda=0;
+                        numbers.setVisible(true);
                         for (Rutas rutas : descargarFiles) {
-                            labelSetText(isDoing, "ADD " + rutas.getPath() + File.separator + rutas.getName());
+                            labelSetText(isDoing, "ADD: " + rutas.getPath() + File.separator + rutas.getName());
+                            labelSetText(numbers,(queda++)+"/"+totalAdescargar);
                             Updater.dowloadFiles(rutas);
                         }
+                        numbers.setVisible(false);
                         //
                         updateProgress(100, 100);
                         labelSetText(isDoing, "Start!");
                         CallOthers.inciarApp();
                         System.exit(0);
                     } catch (Exception e) {
-                        consolaPRINT(e.getMessage());
+                        consolaPRINT(e.getMessage(),3000);
                         e.printStackTrace();//ERROR NO se encuentra la web
                     }
                 } catch (Exception e) {
-                    consolaPRINT("Generate Files error");
-                    consolaPRINT(e.getMessage());
+                    consolaPRINT("Generate Files error",3000);
+                    consolaPRINT(e.getMessage(),3000);
                 }
                 return null;
             }
@@ -231,17 +249,18 @@ public class Main extends Application {
         });
     }
 
-    public static void consolaPRINT(String s) {
+    public static void consolaPRINT(String s,int time) {
         Platform.runLater(new Runnable() {//in case you call from other thread
             @Override
             public void run() {
                 textArea.setText(textArea.getText() + s + "\n");
+                textArea.appendText("");
                 System.out.println(s);//for echo if you want
             }
         });
         //
         try {
-            Thread.sleep(3000);
+            Thread.sleep(time);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

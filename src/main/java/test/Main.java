@@ -2,6 +2,7 @@ package main.java.test;
 
 
 import com.sun.javafx.util.Utils;
+import main.java.CheckSumMD5;
 
 import java.io.File;
 import java.net.URL;

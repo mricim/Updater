@@ -35,10 +35,10 @@ public class CallOthers {
                 System.err.println(UNKNOWN_OS);
                 break;
         }
-        consolaPRINT(iniciar);
-        consolaPRINT(app);
+        consolaPRINT(iniciar,1000);
+        consolaPRINT(app,3000);
         Runtime.getRuntime().exec(app, null, new File(iniciar));
-        consolaPRINT("call to files generator");
+        consolaPRINT("call to files generator",3000);
     }
     static void inciarApp() throws IOException {
         String iniciar = PATH + "/";
@@ -60,15 +60,15 @@ public class CallOthers {
                 System.err.println(UNKNOWN_OS);
                 break;
         }
-        consolaPRINT(iniciar);
-        consolaPRINT(app);
+        consolaPRINT(iniciar,3000);
+        consolaPRINT(app,3000);
         Runtime.getRuntime().exec(app, null, new File(iniciar));
-        consolaPRINT("INICIO");
+        consolaPRINT("INICIO",3000);
     }
     static void installer(File file) throws IOException {
-        consolaPRINT("INSTALADOR");
+        consolaPRINT("INSTALADOR",3000);
         String path = file.getAbsolutePath();
-        consolaPRINT(path);
+        consolaPRINT(path,3000);
         if (Utils.isWindows()) {
 //            consolaPRINT(path.substring(0, path.lastIndexOf("\\") + 1));
             Runtime.getRuntime().exec(path, null, new File(file.getParent()));

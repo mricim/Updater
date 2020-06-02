@@ -1,36 +1,34 @@
 package main.java;
 
-import java.io.File;
-import java.util.Comparator;
 import java.util.Objects;
 
 public class Rutas {
     private String system;
-    private String type;
+    private String fileORlist;
     private String version;
     private String href;
     private String name;
     private String path;
     private String md5;
-    private String file;
+    private String nameFile;
 
-    public Rutas(String system, String type, String version, String href, String name, String path, String md5, String file) {
+    public Rutas(String system, String fileORlist, String version, String href, String name, String path, String md5, String nameFile) {
         this.system = system;
-        this.type = type;
+        this.fileORlist = fileORlist;
         this.version = version;
         this.href = href;
         this.name = name;
         this.path = path;
         this.md5 = md5;
-        this.file = file;
+        this.nameFile = nameFile;
     }
 
     public String getSystem() {
         return system;
     }
 
-    public String getType() {
-        return type;
+    public String getFileORlist() {
+        return fileORlist;
     }
 
     public String getVersion() {
@@ -42,35 +40,41 @@ public class Rutas {
     }
 
     public String getName() {
-        return name;
+        if (name != null) {return name;}
+        return "0";
     }
 
     public String getPath() {
         return path;
     }
     public String getPathNope() {
+        if (path != null) {
         return path.replaceAll("\\\\","/");
+        }
+        return "null";
     }
 
     public String getMd5() {
-        return md5;
+        if (md5 != null) {
+        return md5;}
+        return "0";
     }
 
-    public String getFile() {
-        return file;
+    public String getNameFile() {
+        return nameFile;
     }
 
     @Override
     public String toString() {
         return "ListaDeRutas{" +
                 "system='" + system + '\'' +
-                ", type='" + type + '\'' +
+                ", type='" + fileORlist + '\'' +
                 ", version='" + version + '\'' +
                 ", href='" + href + '\'' +
                 ", name='" + name + '\'' +
                 ", path='" + getPathNope() + '\'' +
                 ", md5='" + md5 + '\'' +
-                ", file='" + file + '\'' +
+                ", file='" + nameFile + '\'' +
                 '}';
     }
 

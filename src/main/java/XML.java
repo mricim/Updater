@@ -21,6 +21,8 @@ public class XML {
 
     public static Document getDocument(String hostDowloads, String fileList) throws ParserConfigurationException, IOException, SAXException {
         // DOM:
+        System.out.println(hostDowloads+" - "+fileList);
+        System.out.println("XXXXXXXXXXXXXXX");
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document documento = db.parse(new URL(hostDowloads + fileList).openStream());
@@ -33,6 +35,7 @@ public class XML {
 
 
     protected static Rutas getRuta(String url, String nameFile, String fileORlist, String ifSearch) throws IOException, SAXException, ParserConfigurationException {
+        System.out.println("getRuta "+nameFile);
         Document document2 = getDocument(url, nameFile);
         NodeList nList2 = document2.getElementsByTagName(fileORlist);
         return extractorXML(url, nList2, null, ifSearch);
@@ -54,7 +57,7 @@ public class XML {
                 String name = null;
                 String path = null;
                 String md5 = null;
-                String file = null;
+                String nameFile = null;
                 try {
                     seeker = eElement.getElementsByTagName("seeker").item(0).getTextContent();
                 } catch (NullPointerException e) {
@@ -88,9 +91,12 @@ public class XML {
                 } catch (NullPointerException e) {
                 }
                 try {
-                    file = eElement.getElementsByTagName("file").item(0).getTextContent();
+                    nameFile = eElement.getElementsByTagName("nameFile").item(0).getTextContent();
                 } catch (NullPointerException e) {
                 }
+
+//                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//                System.out.println(seeker);
 //                System.out.println(system);
 //                System.out.println(type);
 //                System.out.println(version);
@@ -98,26 +104,28 @@ public class XML {
 //                System.out.println(name);
 //                System.out.println(path);
 //                System.out.println(md5 + "\n");
+//                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
                 String[] versionNewSplit;
                 switch (tipoDeBusqueda) {
                     case "installer":
                         if (seeker.equals("installer")) {
-                            return new Rutas(system, type, version, ruta + href, name, path, md5, file);
+                            return new Rutas(system, type, version, ruta + href, name, path, md5, nameFile);
                         }
                         break;
                     case "updater":
                         if (seeker.equals("updater")) {
-                            return new Rutas(system, type, version, ruta + href, name, path, md5, file);
+                            return new Rutas(system, type, version, ruta + href, name, path, md5, nameFile);
                         }
                     case "files":
                         if (seeker.equals("files")) {
-                            return new Rutas(system, type, version, ruta + href, name, path, md5, file);
+                            return new Rutas(system, type, version, ruta + href, name, path, md5, nameFile);
                         }
                         break;
                     case "os":
                         if (system.equals(Main.OS)) {
                             System.out.println(ruta + href);
-                            return new Rutas(system, type, version, ruta + href, name, path, md5, file);
+                            return new Rutas(system, type, version, ruta + href, name, path, md5, nameFile);
                         }
                         break;
                     case "InstallerExe":
@@ -128,7 +136,7 @@ public class XML {
                             int ceroNew = Integer.parseInt(versionNewSplit[0]);
                             int unoNew = Integer.parseInt(versionNewSplit[1]);
                             if (ceroNew >= ceroOld && unoNew > unoOld) {// ?.x.x.x >= actual &&  x.?.x.x > actual
-                                return new Rutas(system, "installer", version, ruta + href, name, path, md5, file);
+                                return new Rutas(system, "installer", version, ruta + href, name, path, md5, nameFile);
                             } else if (ceroNew <= ceroOld && unoNew < unoOld) {
                                 return null;
                             }
@@ -143,14 +151,14 @@ public class XML {
                             int unoNew = Integer.parseInt(versionNewSplit[1]);
                             int dosNew = Integer.parseInt(versionNewSplit[2]);
                             if (ceroNew == ceroOld && unoNew == unoOld && dosNew > dosOld) {// ?.x.x.x == actual &&  x.?.x.x == actual &&  x.x.?.x > actual
-                                return new Rutas(system, "updaterCore", version, ruta + href, name, path, md5, file);
+                                return new Rutas(system, "updaterCore", version, ruta + href, name, path, md5, nameFile);
                             } else if (ceroNew <= ceroOld && unoNew <= unoOld && dosNew < dosOld) {
                                 return null;
                             }
                         }
                         break;
                     case "updaterFile":
-                        Updater.newFiles.add(new Rutas(system, "updaterCore", version, ruta + href, name, path, md5, file));
+                        Updater.newFiles.add(new Rutas(system, "updaterCore", version, ruta + href, name, path, md5, nameFile));
                 }
             }
         }

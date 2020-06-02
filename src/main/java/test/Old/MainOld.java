@@ -1,15 +1,5 @@
 package main.java.test.Old;
 
-import main.java.test.CheckSumMD5;
-
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.TreeMap;
-
-import static main.java.test.XML.readXML;
-
 
 public class MainOld {
     private static final String PATH = System.getProperty("user.dir").replace("Updater", "");
