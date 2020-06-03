@@ -2,13 +2,14 @@ package main.java.os;
 
 /**
  * helper class to check the operating system this Java VM runs in
- *
+ * <p>
  * please keep the notes below as a pseudo-license
- *
+ * <p>
  * http://stackoverflow.com/questions/228477/how-do-i-programmatically-determine-operating-system-in-java
  * compare to http://svn.terracotta.org/svn/tc/dso/tags/2.6.4/code/base/common/src/com/tc/util/runtime/Os.java
  * http://www.docjar.com/html/api/org/apache/commons/lang/SystemUtils.java.html
  */
+
 import com.sun.javafx.util.Utils;
 
 import java.io.File;
@@ -60,13 +61,41 @@ public final class OsCheck {
         }
         return detectedOS;
     }
-    public static String changeRute(String rute){
-        if (OS.equals("windows")) {
-            return rute.replaceAll("/","\\");
-        } else if (OS.equals("linux")) {
-            return rute.replaceAll("\\\\","/");
-        }else {
-            return rute;
+
+    public static String changeRuteURL(String rute) {
+        try {
+            return rute.replaceAll("\\\\", "/");
+        } catch (Exception e) {
+            //e.printStackTrace();
         }
+        return rute;
+    }
+
+    public static String changeRute(String rute) {
+        try {
+            if (OS.equals("windows")) {
+                return rute.replaceAll("/", "\\");
+            } else if (OS.equals("linux")) {
+                return rute.replaceAll("\\\\", "/");
+            } else {
+                return rute;
+            }
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        return rute;
+    }
+
+    public static String returnSlash(String delante, String detras) {
+        StringBuilder frase = new StringBuilder(delante);
+        if (OS.equals("windows")) {
+            frase.append("\\");
+        } else if (OS.equals("linux")) {
+            frase.append("/");
+        } else {
+            frase.append("/");
+        }
+        frase.append(detras);
+        return frase.toString();
     }
 }

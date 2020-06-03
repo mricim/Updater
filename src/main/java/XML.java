@@ -22,7 +22,6 @@ public class XML {
     public static Document getDocument(String hostDowloads, String fileList) throws ParserConfigurationException, IOException, SAXException {
         // DOM:
         System.out.println(hostDowloads+" - "+fileList);
-        System.out.println("XXXXXXXXXXXXXXX");
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document documento = db.parse(new URL(hostDowloads + fileList).openStream());

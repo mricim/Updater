@@ -52,6 +52,10 @@ public class Rutas {
         return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public String getPathNope() {
         if (path != null) {
             return OsCheck.changeRute(path);

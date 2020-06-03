@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static main.java.Hash.MD5;
 import static main.java.Main.*;
-import static main.java.os.OsCheck.changeRute;
+import static main.java.os.OsCheck.*;
 
 public class Updater {
 
@@ -34,7 +34,9 @@ public class Updater {
 
         //Descarga del fichero
         new File(pathTemp.getAbsolutePath()).delete();//por si existe otro fichero con el mismo nombre
-        Files.copy(new URL(changeRute(toUpload.getHref())).openStream(), Paths.get(pathTemp.getAbsolutePath()));
+        String url = changeRuteURL(toUpload.getHref());
+        System.out.println(url);
+        Files.copy(new URL(url).openStream(), Paths.get(pathTemp.getAbsolutePath()));
         consolaPRINT("Descarga completada", 50);
         File fileNew = new File(pathTemp.getAbsolutePath());
         try {
@@ -88,7 +90,9 @@ public class Updater {
         String path = PATH + rutas.getPath() + File.separator + rutas.getName();
         File remove = new File(OsCheck.changeRute(path));
         if (remove.delete()) {
-            System.out.println("delete");
+            System.out.println("delete: " + remove.getAbsolutePath());
+        } else {
+            System.out.println("not delete: " + remove.getAbsolutePath());
         }
     }
 
@@ -124,7 +128,9 @@ public class Updater {
         for (File file : files) {
             String name = file.getName();
             //System.out.println(file.getName() + " " + file.getPath().replace(PATH, "").replace("\\" + name, "") + " " + CheckSumMD5.getMD5Checksum(file));
-            oldFiles.add(new Rutas(null, null, null, null, name, file.getPath().replace(PATH, "").replace("\\" + name, ""), CheckSumMD5.getMD5Checksum(file), null));
+            String rute = file.getPath().replace(PATH, "").replace(returnSlash("", name), "");
+            rute = rute.startsWith("/") ? rute.substring(1) : rute;
+            oldFiles.add(new Rutas(null, null, null, null, name, rute, CheckSumMD5.getMD5Checksum(file), null));
         }
 
     }

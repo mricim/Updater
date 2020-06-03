@@ -144,38 +144,38 @@ public class Main extends Application {
                     generateFiles();
                     //leer del fichero de configs
                     updateProgress(2, 100);
-                    consolaPRINT("Read configs",3000);
+                    consolaPRINT("Read configs", 3000);
                     new GetPropertyValues().getPropValues();
-                    consolaPRINT("starter variables",3000);
+                    consolaPRINT("starter variables", 3000);
                     hostDowloads = host + project;
                     versionOldSplit = versionOld.split("\\.");
-                    consolaPRINT("generator Labels",3000);
+                    consolaPRINT("generator Labels", 3000);
                     generatorLabel(versionOldHbox, versionOldSplit, false, false, false);
 
                     updateProgress(3, 100);
 
-                    consolaPRINT("Check Versions",3000);
+                    consolaPRINT("Check Versions", 3000);
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
                         NodeList nodeList = XML.getList(XML.getDocument(hostDowloads, fileList));
                         Rutas toUpload = Updater.chekUpdateMajor(nodeList, "installer");
-                        consolaPRINT("INSTALLER? " + toUpload,3000);
+                        consolaPRINT("INSTALLER? " + toUpload, 3000);
                         updateProgress(10, 100);
 
                         //TODO XMLtoUploader toXML = null;
 
                         if (toUpload == null) {
                             toUpload = Updater.chekUpdateMinor(nodeList, "updater");
-                            consolaPRINT("SUB VERSION? " + toUpload,3000);
+                            consolaPRINT("SUB VERSION? " + toUpload, 3000);
                             updateProgress(20, 100);
                         }
-                        consolaPRINT("...",3000);
+                        consolaPRINT("...", 3000);
                         if (toUpload != null) {
                             comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, toUpload.getVersion().split("\\."));
 
                             labelSetText(isDoing, "Donwload new upgrade");
-                            consolaPRINT(toUpload.toString(),3000);
+                            consolaPRINT(toUpload.toString(), 3000);
                             try {
                                 //GererateXMLtoUpdater.generar(file, toXML);
                                 updateProgress(30, 100);
@@ -184,38 +184,42 @@ public class Main extends Application {
                                 updateProgress(40, 100);
                                 new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
-                                    consolaPRINT("UPDATE INSTALLER",3000);
+                                    consolaPRINT("UPDATE INSTALLER", 3000);
                                     CallOthers.installer(file);
                                     System.exit(0);
                                 } else {
-                                    consolaPRINT("UPDATE NORMAL",3000);
+                                    consolaPRINT("UPDATE NORMAL", 3000);
                                 }
                             } catch (Exception e) {
-                                consolaPRINT(e.getMessage(),3000);
+                                consolaPRINT(e.getMessage(), 3000);
                                 e.printStackTrace();//ERROR DE DESCARGA
                             }
                         } else {
-                            consolaPRINT("NO UPDATES",3000);
+                            consolaPRINT("NO UPDATES", 3000);
                         }
                         updateProgress(50, 100);
-                        //
                         Updater.listOldFiles();
                         Updater.chekUpdateFiles(nodeList, "files");
                         System.out.println(descargarFiles.size());
                         System.out.println(borrarFiles.size());
                         System.out.println(borrarFiles.contains(descargarFiles));
                         for (Rutas rutas : borrarFiles) {
-                            System.out.println("REMOVE " + rutas.getPath());
-                                Updater.removeFiles(rutas);
+                            if (OS.equals("linux")) {
+                                rutas.setPath("/"+rutas.getPath());
+                            }
+                            labelSetText(isDoing,"REMOVE " + rutas.getPath());
+                            Updater.removeFiles(rutas);
                         }
-                        //TODO
-                        int totalAdescargar=descargarFiles.size();
-                        int queda=0;
+                        int totalAdescargar = descargarFiles.size();
+                        int queda = 0;
                         numbers.setVisible(true);
                         for (Rutas rutas : descargarFiles) {
+                            if (OS.equals("linux")) {
+                                rutas.setPath("/"+rutas.getPath());
+                            }
                             labelSetText(isDoing, "ADD: " + rutas.getPath() + File.separator + rutas.getName());
-                            labelSetText(numbers,(queda++)+"/"+totalAdescargar);
-                            updateProgress(50+((queda*49)/totalAdescargar),100);
+                            labelSetText(numbers, (queda++) + "/" + totalAdescargar);
+                            updateProgress(50 + ((queda * 49) / totalAdescargar), 100);
                             Updater.dowloadFiles(rutas);
                         }
                         numbers.setVisible(false);
@@ -225,12 +229,12 @@ public class Main extends Application {
                         CallOthers.inciarApp();
                         System.exit(0);
                     } catch (Exception e) {
-                        consolaPRINT(e.getMessage(),3000);
+                        consolaPRINT(e.getMessage(), 3000);
                         e.printStackTrace();//ERROR NO se encuentra la web
                     }
                 } catch (Exception e) {
-                    consolaPRINT("Generate Files error",3000);
-                    consolaPRINT(e.getMessage(),3000);
+                    consolaPRINT("Generate Files error", 3000);
+                    consolaPRINT(e.getMessage(), 3000);
                 }
                 return null;
             }
@@ -250,7 +254,7 @@ public class Main extends Application {
         });
     }
 
-    public static void consolaPRINT(String s,int time) {
+    public static void consolaPRINT(String s, int time) {
         Platform.runLater(new Runnable() {//in case you call from other thread
             @Override
             public void run() {
