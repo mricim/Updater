@@ -158,7 +158,6 @@ public class Main extends Application {
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
-                        System.out.println("FFFFFF "+fileList);
                         NodeList nodeList = XML.getList(XML.getDocument(hostDowloads, fileList));
                         Rutas toUpload = Updater.chekUpdateMajor(nodeList, "installer");
                         consolaPRINT("INSTALLER? " + toUpload,3000);
@@ -206,15 +205,17 @@ public class Main extends Application {
                         System.out.println(borrarFiles.size());
                         System.out.println(borrarFiles.contains(descargarFiles));
                         for (Rutas rutas : borrarFiles) {
-                            System.out.println("REMOVE " + rutas);
+                            System.out.println("REMOVE " + rutas.getPath());
                                 Updater.removeFiles(rutas);
                         }
+                        //TODO
                         int totalAdescargar=descargarFiles.size();
                         int queda=0;
                         numbers.setVisible(true);
                         for (Rutas rutas : descargarFiles) {
                             labelSetText(isDoing, "ADD: " + rutas.getPath() + File.separator + rutas.getName());
                             labelSetText(numbers,(queda++)+"/"+totalAdescargar);
+                            updateProgress(50+((queda*49)/totalAdescargar),100);
                             Updater.dowloadFiles(rutas);
                         }
                         numbers.setVisible(false);

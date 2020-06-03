@@ -1,5 +1,6 @@
 package main.java;
 
+import main.java.os.OsCheck;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import static main.java.Hash.MD5;
 import static main.java.Main.*;
+import static main.java.os.OsCheck.changeRute;
 
 public class Updater {
 
@@ -27,21 +29,18 @@ public class Updater {
     static File dowloadFiles(Rutas toUpload) throws Exception {
         String nameFile = toUpload.getName();
         pathTemp = new File(PATH + "/temp/" + nameFile);
-        String prePath = PATH + toUpload.getPath();
-        String path = PATH + File.separator + toUpload.getPath() + File.separator + nameFile;
-        if (OS.equals("windows")) {
-            path = path.replaceAll("/", "\\");
-        }
+        //String prePath = PATH + toUpload.getPath();
+        String path = changeRute(PATH + File.separator + toUpload.getPath() + File.separator + nameFile);
 
         //Descarga del fichero
         new File(pathTemp.getAbsolutePath()).delete();//por si existe otro fichero con el mismo nombre
-        Files.copy(new URL(toUpload.getHref().replaceAll("\\\\", "/")).openStream(), Paths.get(pathTemp.getAbsolutePath()));
+        Files.copy(new URL(changeRute(toUpload.getHref())).openStream(), Paths.get(pathTemp.getAbsolutePath()));
         consolaPRINT("Descarga completada", 50);
         File fileNew = new File(pathTemp.getAbsolutePath());
         try {
             //Comprobacion de que el md5 es correcto
-            String extension=fileNew.getName().substring(fileNew.getName().lastIndexOf('.') + 1);
-            if (! (extension.equals("properties")|extension.equals("xml"))) {
+            String extension = fileNew.getName().substring(fileNew.getName().lastIndexOf('.') + 1);
+            if (!(extension.equals("properties") | extension.equals("xml"))) {
                 if (!(Hash.toHex(MD5.checksum(fileNew)).equals(toUpload.getMd5()))) {
                     //throw new Exception("MD5 --> original=" + toUpload.getMd5() + " file=" + CheckSumMD5.getMD5Checksum(fileNew)+"\n"+fileNew.getAbsolutePath());
                     throw new Exception("MD5 --> inWEB=" + toUpload.getMd5() + " file=" + Hash.toHex(MD5.checksum(fileNew)) + "\n" + fileNew.getAbsolutePath());
@@ -52,20 +51,26 @@ public class Updater {
 //                consolaPRINT(xmLtoUploader.getMd5());
             if (!toUpload.getFileORlist().equals("installer")) {
                 consolaPRINT(path, 50);
-                new File(prePath).mkdirs();
-                File old = new File(path);
-                consolaPRINT(fileNew.getAbsolutePath() + " -> " + path, 100);
+                //new File(prePath).mkdirs();
+                File old = new File(changeRute(path));
+                consolaPRINT(fileNew + " -> " + old, 100);
                 if (old.delete() || !old.exists()) {
 
-                    //consolaPRINT(fileNew.getAbsolutePath() + " " + old.getAbsolutePath());
+                    //consolaPRINT(fileNew.getAbsolutePath() + " -> " + old.getAbsolutePath());
                     //consolaPRINT(fileNew.getAbsolutePath());
 
                     //Files.move(Paths.get(fileNew.getAbsolutePath()), Paths.get(old.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+                    File dir = new File(old.getParent());
+                    if (!dir.exists()) {
+                        if (!dir.mkdirs()) {
+                            throw new Exception("Not create dir");
+                        }
+                    }
                     if (fileNew.renameTo(old)) {
                         //consolaPRINT("move file: hecho");
                         return null;
                     } else {
-                        //consolaPRINT("move file: error");
+                        consolaPRINT("move file: error", 30);
                     }
                 } else {
                     consolaPRINT("ERROR BORRAR \n----------", 3000);
@@ -76,23 +81,19 @@ public class Updater {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        throw new Exception("algo raro: dowloadFiles()");
+        throw new Exception("NOT DOWNLOAD: dowloadFiles()");
     }
 
     public static void removeFiles(Rutas rutas) {
         String path = PATH + rutas.getPath() + File.separator + rutas.getName();
-        File remove = new File(path);
+        File remove = new File(OsCheck.changeRute(path));
         if (remove.delete()) {
             System.out.println("delete");
         }
     }
 
     public static Rutas chekUpdateMajor(NodeList nList, String type) throws IOException, SAXException, ParserConfigurationException {
-        System.out.println(nList + "\nDDDDDD " + type);
         Rutas listaDowloadsApp = XML.extractorXML(hostDowloads, nList, null, type);
-        System.out.println("TTTTTTTTTTTTTTTTTTTTTTT");
-        System.out.println(listaDowloadsApp);
-        System.out.println("TTTTTTTTTTTTTTTTTTTTTTT");
         Rutas listaInstallers = XML.getRuta(listaDowloadsApp.getHref(), listaDowloadsApp.getNameFile(), "list", "os");
         return XML.getRuta(listaInstallers.getHref(), listaInstallers.getNameFile(), "file", "InstallerExe");
     }
@@ -115,12 +116,17 @@ public class Updater {
 
     public static void listOldFiles() throws Exception {
         List<File> files = new ArrayList<>();
-        listf(PATH + "res", files);
+        if (OS.equals("linux")) {
+            listf(changeRute(PATH + "/res"), files);
+        } else {
+            listf(changeRute(PATH + "res"), files);
+        }
         for (File file : files) {
             String name = file.getName();
             //System.out.println(file.getName() + " " + file.getPath().replace(PATH, "").replace("\\" + name, "") + " " + CheckSumMD5.getMD5Checksum(file));
             oldFiles.add(new Rutas(null, null, null, null, name, file.getPath().replace(PATH, "").replace("\\" + name, ""), CheckSumMD5.getMD5Checksum(file), null));
         }
+
     }
 
     public static void listf(String directoryName, List<File> files) {

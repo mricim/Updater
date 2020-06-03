@@ -42,27 +42,27 @@ public class CallOthers {
     }
     static void inciarApp() throws IOException {
         String iniciar = PATH + "/";
-        String app = "";
+        File app = null;
         switch (OS_VERSION){
             case "windows":
                 System.out.println("OS Version: "+OS_VERSION);
-                app = iniciar + "core.exe";
+                app = new File(iniciar + "core.exe");
                 break;
             case "mac":
                 System.out.println("OS Version: "+OS_VERSION);
-                app = iniciar + "core.app";//TODO no estoy seguro de la extensión de ejecutable de MAC OS
+                app = new File(iniciar + "core.app");//TODO no estoy seguro de la extensión de ejecutable de MAC OS
                 break;
             case "linux":
                 System.out.println("OS Version: "+OS_VERSION);
-                app = iniciar + "core.sh";
+                app = new File(iniciar + "core.sh");
                 break;
             default:
                 System.err.println(UNKNOWN_OS);
                 break;
         }
         consolaPRINT(iniciar,3000);
-        consolaPRINT(app,3000);
-        Runtime.getRuntime().exec(app, null, new File(iniciar));
+        consolaPRINT(app.getAbsolutePath(),3000);
+        Runtime.getRuntime().exec(app.getAbsolutePath(), null, new File(iniciar));
         consolaPRINT("INICIO",3000);
     }
     static void installer(File file) throws IOException {

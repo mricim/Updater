@@ -11,7 +11,10 @@ package main.java.os;
  */
 import com.sun.javafx.util.Utils;
 
+import java.io.File;
 import java.util.Locale;
+
+import static main.java.Main.OS;
 
 public final class OsCheck {
     public static String operativeSystem() {
@@ -56,5 +59,14 @@ public final class OsCheck {
             }
         }
         return detectedOS;
+    }
+    public static String changeRute(String rute){
+        if (OS.equals("windows")) {
+            return rute.replaceAll("/","\\");
+        } else if (OS.equals("linux")) {
+            return rute.replaceAll("\\\\","/");
+        }else {
+            return rute;
+        }
     }
 }

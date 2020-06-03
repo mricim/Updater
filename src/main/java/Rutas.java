@@ -1,5 +1,7 @@
 package main.java;
 
+import main.java.os.OsCheck;
+
 import java.util.Objects;
 
 public class Rutas {
@@ -40,23 +42,27 @@ public class Rutas {
     }
 
     public String getName() {
-        if (name != null) {return name;}
+        if (name != null) {
+            return name;
+        }
         return "0";
     }
 
     public String getPath() {
         return path;
     }
+
     public String getPathNope() {
         if (path != null) {
-        return path.replaceAll("\\\\","/");
+            return OsCheck.changeRute(path);
         }
         return "null";
     }
 
     public String getMd5() {
         if (md5 != null) {
-        return md5;}
+            return md5;
+        }
         return "0";
     }
 
