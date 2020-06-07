@@ -1,5 +1,6 @@
 package main.java;
 
+import com.sun.javafx.util.Utils;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -50,7 +51,7 @@ public class Main extends Application {
         launch(args);
     }
 
-    private static String bold = "-fx-font-weight: bold";
+    private static final String bold = "-fx-font-weight: bold";
     //Que hace?
     private static final Label isDoing = new Label("Read configs");
     private static final Label numbers = new Label("");
@@ -158,13 +159,15 @@ public class Main extends Application {
                     labelSetText(isDoing, "check new versions...");
                     //
                     try {
+                        numbers.setVisible(true);
+                        labelSetText(numbers, "Installer...?");
                         NodeList nodeList = XML.getList(XML.getDocument(hostDowloads, fileList));
                         Rutas toUpload = Updater.chekUpdateMajor(nodeList, "installer");
                         consolaPRINT("INSTALLER? " + toUpload, 3000);
                         updateProgress(10, 100);
 
                         //TODO XMLtoUploader toXML = null;
-
+                        labelSetText(numbers, "Upgrade...?");
                         if (toUpload == null) {
                             toUpload = Updater.chekUpdateMinor(nodeList, "updater");
                             consolaPRINT("SUB VERSION? " + toUpload, 3000);
@@ -184,10 +187,11 @@ public class Main extends Application {
                                 updateProgress(40, 100);
                                 new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
+                                    labelSetText(numbers,"UPDATE INSTALLER");
                                     consolaPRINT("UPDATE INSTALLER", 3000);
                                     CallOthers.installer(file);
-                                    System.exit(0);
                                 } else {
+                                    labelSetText(numbers,"UPDATE version");
                                     consolaPRINT("UPDATE NORMAL", 3000);
                                 }
                             } catch (Exception e) {
@@ -195,6 +199,7 @@ public class Main extends Application {
                                 e.printStackTrace();//ERROR DE DESCARGA
                             }
                         } else {
+                            labelSetText(numbers, "Upgrade files...");
                             consolaPRINT("NO UPDATES", 3000);
                         }
                         updateProgress(50, 100);
@@ -204,7 +209,7 @@ public class Main extends Application {
                         System.out.println(borrarFiles.size());
                         System.out.println(borrarFiles.contains(descargarFiles));
                         for (Rutas rutas : borrarFiles) {
-                            if (OS.equals("linux")) {
+                            if (Utils.isUnix()) {
                                 rutas.setPath("/"+rutas.getPath());
                             }
                             labelSetText(isDoing,"REMOVE " + rutas.getPath());
@@ -212,9 +217,8 @@ public class Main extends Application {
                         }
                         int totalAdescargar = descargarFiles.size();
                         int queda = 0;
-                        numbers.setVisible(true);
                         for (Rutas rutas : descargarFiles) {
-                            if (OS.equals("linux")) {
+                            if (Utils.isUnix()) {
                                 rutas.setPath("/"+rutas.getPath());
                             }
                             labelSetText(isDoing, "ADD: " + rutas.getPath() + File.separator + rutas.getName());

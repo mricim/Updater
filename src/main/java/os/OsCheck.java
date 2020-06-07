@@ -73,9 +73,9 @@ public final class OsCheck {
 
     public static String changeRute(String rute) {
         try {
-            if (OS.equals("windows")) {
+            if (Utils.isWindows()) {
                 return rute.replaceAll("/", "\\");
-            } else if (OS.equals("linux")) {
+            } else if (Utils.isUnix()) {
                 return rute.replaceAll("\\\\", "/");
             } else {
                 return rute;
@@ -88,9 +88,9 @@ public final class OsCheck {
 
     public static String returnSlash(String delante, String detras) {
         StringBuilder frase = new StringBuilder(delante);
-        if (OS.equals("windows")) {
+        if (Utils.isWindows()) {
             frase.append("\\");
-        } else if (OS.equals("linux")) {
+        } else if (Utils.isUnix()) {
             frase.append("/");
         } else {
             frase.append("/");

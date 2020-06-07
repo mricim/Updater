@@ -1,5 +1,6 @@
 package main.java;
 
+import com.sun.javafx.util.Utils;
 import main.java.os.OsCheck;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -120,7 +121,7 @@ public class Updater {
 
     public static void listOldFiles() throws Exception {
         List<File> files = new ArrayList<>();
-        if (OS.equals("linux")) {
+        if (Utils.isUnix()) {
             listf(changeRute(PATH + "/res"), files);
         } else {
             listf(changeRute(PATH + "res"), files);

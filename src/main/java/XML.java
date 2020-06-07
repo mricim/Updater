@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import org.w3c.dom.Document;
 
 public class XML {
-    private static int ceroOld = Integer.parseInt(Main.versionOldSplit[0]);
-    private static int unoOld = Integer.parseInt(Main.versionOldSplit[1]);
-    private static int dosOld = Integer.parseInt(Main.versionOldSplit[2]);
+    private static final int ceroOld = Integer.parseInt(Main.versionOldSplit[0]);
+    private static final int unoOld = Integer.parseInt(Main.versionOldSplit[1]);
+    private static final int dosOld = Integer.parseInt(Main.versionOldSplit[2]);
 
     public static Document getDocument(String hostDowloads, String fileList) throws ParserConfigurationException, IOException, SAXException {
         // DOM:

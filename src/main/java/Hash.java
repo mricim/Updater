@@ -13,7 +13,7 @@ public enum Hash {
     SHA256("SHA-256"),
     SHA512("SHA-512");
 
-    private String name;
+    private final String name;
 
     Hash(String name) {
         this.name = name;
