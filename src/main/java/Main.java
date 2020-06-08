@@ -166,7 +166,7 @@ public class Main extends Application {
                         consolaPRINT("INSTALLER? " + toUpload, 3000);
                         updateProgress(10, 100);
 
-                        //TODO XMLtoUploader toXML = null;
+                        //XMLtoUploader toXML = null;
                         labelSetText(numbers, "Upgrade...?");
                         if (toUpload == null) {
                             toUpload = Updater.chekUpdateMinor(nodeList, "updater");
@@ -187,11 +187,11 @@ public class Main extends Application {
                                 updateProgress(40, 100);
                                 new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
-                                    labelSetText(numbers,"UPDATE INSTALLER");
+                                    labelSetText(numbers, "UPDATE INSTALLER");
                                     consolaPRINT("UPDATE INSTALLER", 3000);
                                     CallOthers.installer(file);
                                 } else {
-                                    labelSetText(numbers,"UPDATE version");
+                                    labelSetText(numbers, "UPDATE version");
                                     consolaPRINT("UPDATE NORMAL", 3000);
                                 }
                             } catch (Exception e) {
@@ -205,21 +205,36 @@ public class Main extends Application {
                         updateProgress(50, 100);
                         Updater.listOldFiles();
                         Updater.chekUpdateFiles(nodeList, "files");
-                        System.out.println(descargarFiles.size());
-                        System.out.println(borrarFiles.size());
-                        System.out.println(borrarFiles.contains(descargarFiles));
+                        /*
+                        System.out.println("web files="+descargarFiles.size());
+                        System.out.println("old files="+borrarFiles.size());
+                                                System.out.println(borrarFiles.contains(descargarFiles));
+                         */
+                        consolaPRINT("web files=" + descargarFiles.size(), 50);
+                        consolaPRINT("old files=" + borrarFiles.size(), 3000);
+
+//                        for (Rutas descargarFile : descargarFiles) {
+//                            System.out.println("descargar= "+descargarFile.getPath());
+//                            break;
+//                        }
+//                        for (Rutas descargarFile : borrarFiles) {
+//                            System.out.println("borrar= "+descargarFile.getPath());
+//                            break;
+//                        }
+//
+//                        System.exit(0);
                         for (Rutas rutas : borrarFiles) {
                             if (Utils.isUnix()) {
-                                rutas.setPath("/"+rutas.getPath());
+                                rutas.setPath("/" + rutas.getPath());
                             }
-                            labelSetText(isDoing,"REMOVE " + rutas.getPath());
+                            labelSetText(isDoing, "REMOVE " + rutas.getPath());
                             Updater.removeFiles(rutas);
                         }
                         int totalAdescargar = descargarFiles.size();
                         int queda = 0;
                         for (Rutas rutas : descargarFiles) {
                             if (Utils.isUnix()) {
-                                rutas.setPath("/"+rutas.getPath());
+                                rutas.setPath("/" + rutas.getPath());
                             }
                             labelSetText(isDoing, "ADD: " + rutas.getPath() + File.separator + rutas.getName());
                             labelSetText(numbers, (queda++) + "/" + totalAdescargar);

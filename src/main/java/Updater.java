@@ -117,21 +117,26 @@ public class Updater {
 
         descargarFiles.removeAll(oldFiles);
         borrarFiles.removeAll(newFiles);
+
     }
 
     public static void listOldFiles() throws Exception {
         List<File> files = new ArrayList<>();
-        if (Utils.isUnix()) {
-            listf(changeRute(PATH + "/res"), files);
-        } else {
-            listf(changeRute(PATH + "res"), files);
-        }
+        listf(changeRute(PATH + "/res"), files);
+
         for (File file : files) {
             String name = file.getName();
             //System.out.println(file.getName() + " " + file.getPath().replace(PATH, "").replace("\\" + name, "") + " " + CheckSumMD5.getMD5Checksum(file));
             String rute = file.getPath().replace(PATH, "").replace(returnSlash("", name), "");
-            rute = rute.startsWith("/") ? rute.substring(1) : rute;
+            if (rute.startsWith("/")|rute.startsWith("\\")){
+                rute=rute.substring(1);
+            }
+            //rute = rute.startsWith("/") ? rute.substring(1) : rute;
+//            if (Utils.isWindows()) {
+                //rute=OsCheck.returnSlash("",rute);
+//            }
             oldFiles.add(new Rutas(null, null, null, null, name, rute, CheckSumMD5.getMD5Checksum(file), null));
+            System.out.println("rute= "+rute);
         }
 
     }

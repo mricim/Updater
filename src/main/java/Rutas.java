@@ -93,6 +93,7 @@ public class Rutas {
         if (this == o) return true;
         if (!(o instanceof Rutas)) return false;
         Rutas rutas = (Rutas) o;
+        //Main.consolaPRINT("AAAAAA "+rutas.getPath()+" "+getPath(),50);
         return getName().equals(rutas.getName()) &&
                 getPathNope().equals(rutas.getPathNope()) &&
                 getMd5().equals(rutas.getMd5());
