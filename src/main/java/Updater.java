@@ -29,7 +29,7 @@ public class Updater {
 
     static File dowloadFiles(Rutas toUpload) throws Exception {
         String nameFile = toUpload.getName();
-        pathTemp = new File(PATH + "/temp/" + nameFile);
+        pathTemp = new File(OsCheck.returnSlash(PATH_TEMP.getAbsolutePath(), nameFile));
         //String prePath = PATH + toUpload.getPath();
         String path = changeRute(PATH + File.separator + toUpload.getPath() + File.separator + nameFile);
 
@@ -128,15 +128,15 @@ public class Updater {
             String name = file.getName();
             //System.out.println(file.getName() + " " + file.getPath().replace(PATH, "").replace("\\" + name, "") + " " + CheckSumMD5.getMD5Checksum(file));
             String rute = file.getPath().replace(PATH, "").replace(returnSlash("", name), "");
-            if (rute.startsWith("/")|rute.startsWith("\\")){
-                rute=rute.substring(1);
+            if (rute.startsWith("/") | rute.startsWith("\\")) {
+                rute = rute.substring(1);
             }
             //rute = rute.startsWith("/") ? rute.substring(1) : rute;
 //            if (Utils.isWindows()) {
-                //rute=OsCheck.returnSlash("",rute);
+            //rute=OsCheck.returnSlash("",rute);
 //            }
             oldFiles.add(new Rutas(null, null, null, null, name, rute, CheckSumMD5.getMD5Checksum(file), null));
-            System.out.println("rute= "+rute);
+            //System.out.println("rute= "+rute);
         }
 
     }

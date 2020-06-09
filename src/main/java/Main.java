@@ -33,6 +33,7 @@ public class Main extends Application {
     public static final boolean DEVfalsePROUDCTIONtrue = false;//"DEV"=false or "PRODUCTION"=true
 
     public static final String PATH = System.getProperty("user.dir").replace("Updater", "");
+    public static final File PATH_TEMP = new File(PATH + "/tmp/");
     public static final String OS = OsCheck.operativeSystem();
     public static String propFileName = PATH + "/conf/config.properties";
     protected static File pathTemp;
@@ -139,7 +140,8 @@ public class Main extends Application {
                     consolaPRINT(i);
                 }
                  */
-                updateProgress(1, 100);
+                consolaPRINT("tmp delete= "+PATH_TEMP.delete(),3000);
+                consolaPRINT("tmp create= "+PATH_TEMP.mkdirs(),50);
                 try {
                     //crear fichero de configs
                     generateFiles();
@@ -147,10 +149,10 @@ public class Main extends Application {
                     updateProgress(2, 100);
                     consolaPRINT("Read configs", 3000);
                     new GetPropertyValues().getPropValues();
-                    consolaPRINT("starter variables", 3000);
+                    consolaPRINT("starter variables", 1000);
                     hostDowloads = host + project;
                     versionOldSplit = versionOld.split("\\.");
-                    consolaPRINT("generator Labels", 3000);
+                    consolaPRINT("generator Labels", 1000);
                     generatorLabel(versionOldHbox, versionOldSplit, false, false, false);
 
                     updateProgress(3, 100);
@@ -175,6 +177,7 @@ public class Main extends Application {
                         }
                         consolaPRINT("...", 3000);
                         if (toUpload != null) {
+                            labelSetText(numbers, "");
                             comparatorVersion(versionOldHbox, versionNewHbox, flecha, versionOldSplit, toUpload.getVersion().split("\\."));
 
                             labelSetText(isDoing, "Donwload new upgrade");
@@ -187,11 +190,11 @@ public class Main extends Application {
                                 updateProgress(40, 100);
                                 new File(propFileName).delete();//ELIMINAR EL CONFIGS
                                 if (file != null) {// INSTALAR
-                                    labelSetText(numbers, "UPDATE INSTALLER");
+                                    labelSetText(numbers, "INSTALLER");
                                     consolaPRINT("UPDATE INSTALLER", 3000);
                                     CallOthers.installer(file);
                                 } else {
-                                    labelSetText(numbers, "UPDATE version");
+                                    labelSetText(numbers, "UPDATE");
                                     consolaPRINT("UPDATE NORMAL", 3000);
                                 }
                             } catch (Exception e) {
@@ -199,7 +202,8 @@ public class Main extends Application {
                                 e.printStackTrace();//ERROR DE DESCARGA
                             }
                         } else {
-                            labelSetText(numbers, "Upgrade files...");
+                            labelSetText(isDoing, "Upgrade files...?");
+                            labelSetText(numbers, "");
                             consolaPRINT("NO UPDATES", 3000);
                         }
                         updateProgress(50, 100);
