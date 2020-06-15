@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import org.w3c.dom.Document;
 
@@ -28,7 +27,7 @@ public class XML {
         documento.getDocumentElement().normalize();
         return documento;
     }
-    public static NodeList getList(Document document) throws ParserConfigurationException, IOException, SAXException {
+    public static NodeList getList(Document document) {
         return document.getElementsByTagName("list");
     }
 
@@ -59,39 +58,39 @@ public class XML {
                 String nameFile = null;
                 try {
                     seeker = eElement.getElementsByTagName("seeker").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     system = eElement.getElementsByTagName("system").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     type = eElement.getElementsByTagName("type").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     version = eElement.getElementsByTagName("version").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     href = eElement.getElementsByTagName("href").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     name = eElement.getElementsByTagName("name").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     path = eElement.getElementsByTagName("path").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     md5 = eElement.getElementsByTagName("md5").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
                 try {
                     nameFile = eElement.getElementsByTagName("nameFile").item(0).getTextContent();
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
 
 //                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");

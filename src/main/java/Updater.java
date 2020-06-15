@@ -1,6 +1,5 @@
 package main.java;
 
-import com.sun.javafx.util.Utils;
 import main.java.os.OsCheck;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

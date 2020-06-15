@@ -131,7 +131,7 @@ public class Main extends Application {
 
         Task<Void> task = new Task<Void>() {
             @Override
-            public Void call() throws Exception {
+            public Void call() {
                 //final int max = 1000000;
                 /*
                 final int max = 18000;
